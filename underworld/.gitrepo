@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@bitbucket.org.mcfog:teama7s/underworld.git
+	branch = master
+	commit = 17f6d735dd1fc1f5a69bab0aad863c344f09b0dd
+	parent = c64c06820b1e7c4da23508b5d61e4c6ed0cc207e
+	cmdver = 0.3.1
