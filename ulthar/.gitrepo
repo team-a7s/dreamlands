@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@bitbucket.org.mcfog:teama7s/ulthar.git
+	branch = master
+	commit = da69adc8232da38f5e1606fbeb316db7b03d4e39
+	parent = b1da384ed5519cedb2bfb5637a5ff35295c76136
+	cmdver = 0.3.1

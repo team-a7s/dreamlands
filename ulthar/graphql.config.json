@@ -1,0 +1,16 @@
+{
+  "schema": {
+    "file": "../kadath/src/schema.graphqls"
+  },
+  "endpoints": [
+    {
+      "name": "Default (http://localhost:8080/)",
+      "url": "http://localhost:8080/",
+      "options": {
+        "headers": {
+          "user-agent": "JS GraphQL"
+        }
+      }
+    }
+  ]
+}
