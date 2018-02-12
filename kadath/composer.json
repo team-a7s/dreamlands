@@ -1,0 +1,32 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Lit\\Griffin\\": "src-griffin",
+            "Lit\\Caravel\\": "src-caravel",
+            "Kadath\\": "src"
+        },
+        "files": [
+            "bootstrap.php"
+        ]
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require": {
+        "cache/apcu-adapter": "^1.0",
+        "doctrine/dbal": "^2.7@dev",
+        "doctrine/inflector": "^1.2",
+        "hashids/hashids": "^2.0",
+        "league/flysystem": "^1.0",
+        "league/oauth2-github": "^2.0",
+        "moontoast/math": "^1.1",
+        "predis/predis": "^1.1",
+        "ramsey/uuid": "^3.7",
+        "symfony/console": "^4.0",
+        "symfony/yaml": "^4.0",
+        "vlucas/phpdotenv": "^2.4",
+        "webonyx/graphql-php": "^0.11.5",
+        "yzalis/identicon": "^1.2",
+        "litphp/litphp": "^0.8.0@dev",
+        "symfony/finder": "^4.0"
+    }
+}

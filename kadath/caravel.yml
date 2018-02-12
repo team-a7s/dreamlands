@@ -1,0 +1,42 @@
+plan:
+  reverse:
+    input: db
+    output: schema
+
+  alterdb:
+    from: db
+    to: schema
+    output: db
+
+  alterdb-dry:
+    from: db
+    to: schema
+    output: sql
+
+  generate:
+    input: schema
+    output: class
+
+  apply-schema:
+    input: schema
+    output:
+      - db
+      - class
+
+location:
+  sql:
+    type: sql
+    dsn: "{DATABASE_DSN}"
+  db:
+    type: db
+    dsn: "{DATABASE_DSN}"
+  schema:
+    type: schema
+    directory: ./schema
+  class:
+    type: class
+    namespace: Kadath\Database
+    name: "table_%s"
+    directory: ./src/Database
+    template: ./record.tpl
+

@@ -1,0 +1,38 @@
+name: member
+columns:
+  -
+    name: id
+    type: integer
+    option:
+      autoincrement: true
+      unsigned: true
+  -
+    name: openid
+    type: string
+    option:
+      length: 255
+  -
+    name: last_ip
+    type: string
+    option:
+      notnull: false
+      length: 40
+  -
+    name: vendor
+    type: string
+    option:
+      length: 20
+  -
+    name: vendor_info
+    type: json
+  -
+    name: created_at
+    type: integer
+indexes:
+  -
+    columns:
+      - openid
+    unique: true
+pk:
+  - id
+comment: ''

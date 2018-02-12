@@ -1,0 +1,95 @@
+name: post
+columns:
+  -
+    name: id
+    type: integer
+    option:
+      autoincrement: true
+  -
+    name: user_id
+    type: integer
+    option:
+      notnull: false
+  -
+    name: parent_id
+    type: integer
+    option:
+      notnull: false
+  -
+    name: type
+    type: smallint
+  -
+    name: flag
+    type: integer
+    option:
+      default: '0'
+  -
+    name: child_count
+    type: integer
+    option:
+      notnull: false
+  -
+    name: latest_childs
+    type: json
+    option:
+      notnull: false
+  -
+    name: title
+    type: string
+    option:
+      notnull: false
+      length: 30
+  -
+    name: content_type
+    type: smallint
+  -
+    name: content
+    type: text
+    option:
+      notnull: false
+  -
+    name: created_at
+    type: integer
+  -
+    name: touched_at
+    type: bigint
+  -
+    name: deleted_at
+    type: integer
+    option:
+      notnull: false
+  -
+    name: via
+    type: string
+    option:
+      length: 255
+      default: web
+indexes:
+  -
+    columns:
+      - user_id
+      - type
+      - touched_at
+  -
+    columns:
+      - type
+      - parent_id
+      - touched_at
+  -
+    columns:
+      - deleted_at
+  -
+    columns:
+      - touched_at
+    unique: true
+pk:
+  - id
+fk:
+  -
+    name: fk_post_user
+    key:
+      - user_id
+    table: user
+    foreign_key:
+      - id
+comment: ''

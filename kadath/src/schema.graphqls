@@ -1,0 +1,138 @@
+schema {
+    query: Query,
+    mutation: Mutation
+}
+
+type Query {
+    node(id:ID!): Node!
+    session: Session
+    boards(page:PaginationParam!): BoardConnection!
+}
+
+type Mutation {
+    createSession: Session!
+    login(displayName: String!, hash:String!): Session!
+    spawnUser(nickname: String!): UserSpawnResult!
+    createAuthUrl: String!
+    checkAuthCode(state:String!, code:String!): Session
+
+    post(
+    type:PostType!
+    parentId:String!
+    content:String!
+    title:String
+): Post!
+}
+
+
+type User implements Node {
+    id:ID!
+    displayName: String!
+    avatar: String
+}
+
+type Member implements Node {
+    id:ID!
+    openid: String!
+}
+
+type Board implements Node {
+    id:ID!
+    name: String!
+    tagline: String!
+    threads(page:PaginationParam!): PostConnection!
+}
+
+type Post implements Node {
+    id:ID!
+    author: User!
+    title: String!
+    type: PostType!
+    content: String!
+    contentType: Int!
+    via: String!
+    parentId: String!
+    parentNode: Node!
+}
+
+type UserSpawnResult {
+    user: User!
+    hash: String!
+}
+
+type Session {
+    token: ID!
+    currentUser: User
+    currentMember: Member
+}
+
+
+type BoardConnection implements Connection {
+    edges: [BoardEdge]
+    nodes: [Board]
+    pageInfo: BasicPageInfo!
+    totalCount: Int!
+}
+
+type BoardEdge implements Edge {
+    cursor: String!
+    node: Board!
+}
+
+type PostConnection implements Connection {
+    edges: [PostEdge]
+    nodes: [Post]
+    pageInfo: BasicPageInfo!
+    totalCount: Int!
+}
+
+type PostEdge implements Edge {
+    cursor: String!
+    node: Post!
+}
+
+enum PostType {
+    THREAD
+    POST
+    PROFILE
+}
+enum ContentType {
+    PLAIN
+}
+
+type BasicPageInfo implements PageInfo {
+    startCursor: String!
+    endCursor: String!
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+}
+
+input PaginationParam {
+    after:String,
+    first:Int,
+    before:String,
+    last:Int
+}
+
+interface Node {
+    id:ID!
+}
+
+interface Edge {
+    cursor: String!
+    node: Node!
+}
+
+interface Connection {
+    edges: [Edge]
+    nodes: [Node]
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+interface PageInfo {
+    startCursor: String!
+    endCursor: String!
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+}

@@ -1,0 +1,68 @@
+name: user
+columns:
+  -
+    name: id
+    type: integer
+    option:
+      autoincrement: true
+      unsigned: true
+  -
+    name: member_id
+    type: integer
+    option:
+      notnull: false
+  -
+    name: hash
+    type: string
+    option:
+      length: 40
+  -
+    name: nickname
+    type: string
+    option:
+      length: 10
+  -
+    name: uniq
+    type: integer
+  -
+    name: last_ip
+    type: string
+    option:
+      notnull: false
+      length: 40
+  -
+    name: status
+    type: smallint
+    default: 0
+  -
+    name: expiring_at
+    type: integer
+  -
+    name: created_at
+    type: integer
+indexes:
+  -
+    columns:
+      - expiring_at
+  -
+    columns:
+      - nickname
+      - uniq
+    unique: true
+  -
+    columns:
+      - member_id
+pk:
+  - id
+fk:
+  -
+    name: fk_user_member
+    key:
+      - member_id
+    table: member
+    foreign_key:
+      - id
+    options:
+      onUpdate: cascade
+      onDelete: set null
+comment: ''

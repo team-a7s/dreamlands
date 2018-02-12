@@ -1,0 +1,19 @@
+name: board
+columns:
+  -
+    name: id
+    type: integer
+    option:
+      autoincrement: true
+      unsigned: true
+  -
+    name: name
+    type: string
+  -
+    name: tagline
+    type: string
+  -
+    name: flag
+    type: integer
+pk:
+  - id

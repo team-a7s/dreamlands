@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@bitbucket.org.mcfog:teama7s/kadath.git
+	branch = master
+	commit = fa06da987f4ad50d358a298bd0c9f73ebe1748aa
+	parent = b77b50fe594efbc617e8e814734c5f87f471c5c4
+	cmdver = 0.3.1
