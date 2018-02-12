@@ -100,15 +100,16 @@ export default (apiUrl, httpClient = fetchJson) => {
         const maxInPage = parseInt(
           headers.get('content-range').split('/')[0].split('-').pop(), 10) + 1;
         return {
-          data: json.map(x => x),
+          data: json.map(convertObject),
           total: parseInt(headers.get('content-range').split('/').pop(), 10) ||
           maxInPage,
         };
       case CREATE:
       case GET_ONE:
-        return { data: json[0] };
+        // debugger;
+        return { data: convertObject(json[0]) };
       case UPDATE:
-        return { data: { ...params.data, id: params.id } };
+        return { data: { ...params.data, id: params.id.toString() } };
       case DELETE:
         return { data: params.previousData };
       default:
@@ -132,3 +133,8 @@ export default (apiUrl, httpClient = fetchJson) => {
     return httpClient(url, options).then(convertResponse);
   };
 };
+
+
+function convertObject(obj) {
+  return {...obj, id: obj.id.toString()}
+}

@@ -4,7 +4,7 @@ import { Create, NumberInput, SimpleForm, TextInput } from 'admin-on-rest';
 export function BoardCreate(props) {
   return (
     <Create {...props}>
-      <SimpleForm>
+      <SimpleForm redirect="show">
         <TextInput source="name"/>
         <TextInput source="tagline"/>
         <NumberInput source="flag" defaultValue={0}/>
