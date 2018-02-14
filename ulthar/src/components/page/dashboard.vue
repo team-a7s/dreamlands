@@ -2,16 +2,13 @@
   <section class="dashboard">
     <h1>Hello Dash</h1>
     <hr>
-    <ul>
-      <li v-for="board in boards.nodes" :key="board.id">
-        {{board.name}}
-        - {{board.tagline}}
-      </li>
-    </ul>
+    ASDF
   </section>
 </template>
 
 <script>
+/* eslint-disable */
+
 import gql from 'graphql-tag';
 
 export default {
@@ -31,6 +28,9 @@ export default {
     return {
       boards: null,
     };
+  },
+  mounted() {
+    this.$store.commit('setTitle', 'Home');
   },
 };
 </script>

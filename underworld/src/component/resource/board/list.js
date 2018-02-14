@@ -3,8 +3,6 @@ import {
   Datagrid, DeleteButton, EditButton, List, ShowButton,
   TextField,
 } from 'admin-on-rest'
-import {IconButton,IconMenu, MenuItem} from 'material-ui'
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 
 export function BoardList(props) {
   return (
