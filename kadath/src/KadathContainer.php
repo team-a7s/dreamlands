@@ -8,7 +8,10 @@ use Cache\Adapter\Apcu\ApcuCachePool;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Hashids\Hashids;
+use Kadath\Action\NotFoundAction;
 use Kadath\Adapters\RedisKeyValue;
+use Kadath\Adapters\RouteDefinition;
+use Kadath\Adapters\RouterStubResolver;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\KadathObjectRepository;
 use Kadath\GraphQL\NodeIdentify;
@@ -20,27 +23,48 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 use League\OAuth2\Client\Provider\Github;
 use Lit\Air\Configurator as C;
-use Lit\Bolt\BoltApp;
 use Lit\Bolt\BoltContainer;
+use Lit\Bolt\BoltRouterApp;
+use Lit\Core\Interfaces\RouterInterface;
 use Lit\Griffin\Context;
 use Lit\Griffin\GraphQLConfiguration;
 use Lit\Griffin\ObjectClassGenerator;
 use Lit\Griffin\ObjectRepositoryInterface;
 use Lit\Griffin\SourceBuilder;
 use Lit\Nexus\Cache\CacheKeyValue;
+use Lit\Nexus\Derived\SlicedValue;
+use Lit\Router\FastRoute\CachedDispatcher;
+use Lit\Router\FastRoute\FastRouteRouter;
 use Predis\Client as RedisClient;
+use FastRoute;
 
 class KadathContainer extends BoltContainer
 {
+    const MEMORY_CACHE = 'memoryCache';
+
     public function __construct(array $config = null)
     {
+        /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
         $defaultConfiguration = [
                 //Bolt
                 BoltContainer::class => $this,
-                BoltApp::class => C::decorateCallback(
+                BoltRouterApp::class => C::decorateCallback(
                     C::provideParameter([]),
                     [Kadath::class, 'decorateApp']
                 ),
+                RouterInterface::class => C::instance(FastRouteRouter::class, [
+                    C::instance(CachedDispatcher::class, [
+                        function (KadathContainer $container) {
+                            return SlicedValue::slice($container->get(self::MEMORY_CACHE), 'route');
+                        },
+                        C::instance(\FastRoute\RouteParser\Std::class),
+                        C::instance(\FastRoute\DataGenerator\GroupCountBased::class),
+                        C::instance(RouteDefinition::class),
+                        \FastRoute\Dispatcher\GroupCountBased::class,
+                    ]),
+                    C::instance(RouterStubResolver::class),
+                    NotFoundAction::class,
+                ]),
 
                 //Kadath
                 SessionMiddleware::class => C::provideParameter([
@@ -73,6 +97,9 @@ class KadathContainer extends BoltContainer
                         return $option;
                     }
                 ]),
+                self::MEMORY_CACHE => function (ApcuCachePool $pool) {
+                    return new CacheKeyValue($pool);
+                },
 
                 //Griffin
                 Context::class => C::produce(KadathContext::class),

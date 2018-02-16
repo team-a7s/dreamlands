@@ -8,7 +8,9 @@ import VueApollo from 'vue-apollo';
 
 Vue.use(VueApollo);
 
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  dataIdFromObject: obj => obj.id,
+});
 
 const httpLink = new HttpLink({
   uri: '/graphql',

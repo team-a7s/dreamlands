@@ -10,6 +10,8 @@ use Kadath\Middlewares\SessionMiddleware;
 use Lit\Air\Factory;
 use Lit\Bolt\BoltApp;
 use Lit\Bolt\BoltContainer;
+use Lit\Bolt\BoltRouterApp;
+use Lit\Core\Interfaces\RouterInterface;
 use Lit\Middleware\IpAddress\IpAddress;
 use Psr\Container\ContainerInterface;
 use const Lit\Bolt\EVENT_AFTER_LOGIC;
@@ -66,8 +68,9 @@ class Kadath
 
         return new $_ENV['CONTAINER_CLASS']();
     }
+
     public static function run()
     {
-        BoltApp::run(self::makeContainer());
+        BoltRouterApp::run(self::makeContainer());
     }
 }
