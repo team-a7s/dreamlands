@@ -1,13 +1,14 @@
 <template>
   <section class="nav">
-    <ul v-if="boards" class="board-list">
-      <li v-for="board in boards.nodes" :key="board.id">
-        <router-link :to="'/board/' + board.id" class="board-link group">
+    <md-list v-if="boards" class="board-list">
+      <md-list-item v-for="board in boards.nodes" :key="board.id">
+        <md-icon>move_to_inbox</md-icon>
+        <router-link :to="'/board/' + board.id" class="board-link md-list-item-text">
           <span>{{board.name}}</span>
           <span class="muted">{{board.tagline}}</span>
         </router-link>
-      </li>
-    </ul>
+      </md-list-item>
+    </md-list>
   </section>
 </template>
 

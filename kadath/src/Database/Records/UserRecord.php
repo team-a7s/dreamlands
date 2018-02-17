@@ -53,7 +53,7 @@ class UserRecord extends AbstractRecord implements TableUser, ExportableInterfac
         return [
             'id' => $this->idResolver(),
             'displayName' => $this->getDisplayName(),
-//            'avatar' => $this->av,
+            'avatar' => $this->idResolver('/avatar/%s'),
         ];
     }
 }

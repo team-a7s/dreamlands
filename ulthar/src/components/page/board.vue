@@ -16,7 +16,7 @@ export default {
   computed: {
     board() {
       return this.$apollo.provider.defaultClient.readFragment({
-        id: this.id,
+        id: `Board_${this.id}`,
         fragment: gql`fragment x on Board {
           id
           name

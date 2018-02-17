@@ -63,7 +63,7 @@ class KadathContainer extends BoltContainer
                         \FastRoute\Dispatcher\GroupCountBased::class,
                     ]),
                     C::instance(RouterStubResolver::class),
-                    NotFoundAction::class,
+                    [NotFoundAction::class],
                 ]),
 
                 //Kadath

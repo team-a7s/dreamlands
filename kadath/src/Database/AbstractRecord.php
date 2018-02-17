@@ -15,10 +15,10 @@ abstract class AbstractRecord
         return Utility::getObjectVars($this);
     }
 
-    public function idResolver()
+    public function idResolver(string $fmt = '%s')
     {
-        return function ($src, array $args, KadathContext $context, ResolveInfo $resolveInfo) {
-            return $context->nodeIdentify->getId($this);
+        return function ($src, array $args, KadathContext $context, ResolveInfo $resolveInfo) use ($fmt) {
+            return sprintf($fmt, $context->nodeIdentify->getId($this));
         };
     }
 

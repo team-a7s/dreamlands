@@ -1,21 +1,23 @@
 <template>
   <div id="app">
-    <!--<p>-->
-    <!--<router-link to="/foo">Go to Foo</router-link>-->
-    <!--<router-link to="/bar">Go to Bar</router-link>-->
-    <!--</p>-->
-    <nav class="site-nav">
-      <h1 class="title">
-        <a tabindex="-1" class="handler">
-          <font-awesome-icon :icon="$store.state.icon" fixed-width/>
-        </a>
-        {{$store.state.title}}
-      </h1>
-      <u-nav></u-nav>
-    </nav>
-    <section class="main">
-      <router-view></router-view>
-    </section>
+    <md-app md-mode="reveal">
+      <md-app-toolbar class="md-primary">
+        <md-button class="md-icon-button" @click="menuVisible = !menuVisible">
+          <!--<md-icon>menu</md-icon>-->
+          <font-awesome-icon :icon="$store.state.icon" class="fa-2x" fixed-width/>
+        </md-button>
+        <span class="md-title">{{$store.state.title}}</span>
+      </md-app-toolbar>
+
+      <md-app-drawer :md-active.sync="menuVisible">
+        <md-toolbar class="md-transparent" md-elevation="0">Navigation</md-toolbar>
+        <u-nav></u-nav>
+      </md-app-drawer>
+
+      <md-app-content>
+        <router-view></router-view>
+      </md-app-content>
+    </md-app>
   </div>
 </template>
 
@@ -23,5 +25,10 @@
 
 export default {
   name: 'App',
+  data() {
+    return {
+      menuVisible: false,
+    };
+  },
 };
 </script>
