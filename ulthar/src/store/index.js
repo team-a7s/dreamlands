@@ -23,6 +23,7 @@ export function createStore() {
     state: {
       title: 'loading...',
       icon: 'gamepad',
+      error: null,
     },
 
     mutations: {
@@ -31,6 +32,19 @@ export function createStore() {
       },
       pickIcon(state) {
         state.icon = iconPool[Math.floor(Math.random() * iconPool.length)];
+      },
+      error(state, err) {
+        state.error = state.error || [];
+        state.error.push(err);
+      },
+      shiftError(state) {
+        if (!state.error) {
+          return;
+        }
+        state.error.shift();
+        if (!state.error.length) {
+          state.error = null;
+        }
       },
     },
   });

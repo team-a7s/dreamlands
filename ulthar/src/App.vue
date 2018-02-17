@@ -16,8 +16,16 @@
 
       <md-app-content>
         <router-view></router-view>
+        <md-snackbar
+          md-position="center"
+          :md-duration="4000" :md-active.sync="showSnackbar" md-persistent
+          @md-closed="handleError()"
+        >
+          <span>{{errorMessage}}</span>
+        </md-snackbar>
       </md-app-content>
     </md-app>
+
   </div>
 </template>
 
@@ -28,7 +36,32 @@ export default {
   data() {
     return {
       menuVisible: false,
+      showSnackbar: false,
+      errorMessage: '',
     };
+  },
+  methods: {
+    handleError() {
+      if (!this.$store.state.error || this.showSnackbar) {
+        return;
+      }
+
+      const err = this.$store.state.error[0];
+      this.$store.commit('shiftError');
+
+      let msg = err.message || err;
+      if (msg.match(/^GraphQL error: /)) {
+        msg = msg.slice(15);
+      }
+
+      this.errorMessage = msg;
+      this.showSnackbar = true;
+    },
+  },
+  mounted() {
+    this.$store.subscribe(() => {
+      setTimeout(_ => this.handleError());
+    });
   },
 };
 </script>

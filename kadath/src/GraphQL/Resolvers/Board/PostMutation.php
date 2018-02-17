@@ -60,6 +60,11 @@ class PostMutation extends AbstractKadathResolver
         $post = $this->populatePostRecord();
         $post->type = PostRecord::POST_TYPE_POST;
         $post->parent_id = $thread->id;
+
+        if (empty($post->title)) {
+            throw KadathException::badRequest('empty title');
+        }
+
         $this->postRepo->insert($post);
 
         return $post;
@@ -81,6 +86,11 @@ class PostMutation extends AbstractKadathResolver
         $post = $this->populatePostRecord();
         $post->type = PostRecord::POST_TYPE_THREAD;
         $post->parent_id = $board->id;
+
+        if (empty($post->title)) {
+            throw KadathException::badRequest('empty title');
+        }
+
         $this->postRepo->insert($post);
 
         return $post;
@@ -96,8 +106,8 @@ class PostMutation extends AbstractKadathResolver
         $post->flag = 0;
         $post->child_count = 0;
         $post->latest_childs = '[]';
-        $post->title = $this->args['title'] ?? '';
-        $post->content = $this->args['content'] ?? '';
+        $post->title = trim($this->args['title'] ?? '');
+        $post->content = trim($this->args['content'] ?? '');
         $post->content_type = PostRecord::CONTENT_TYPE_PLAIN;
         $post->created_at = time();
         $post->deleted_at = 0;

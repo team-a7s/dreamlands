@@ -1,6 +1,10 @@
 <template>
   <section class="board" v-if="board">
-    <u-postbox><span class="label">{{board.name}}</span></u-postbox>
+    <u-postbox
+      :parent-id="board.id" post-type="THREAD"
+    >
+      <span class="label">{{board.name}}</span>
+    </u-postbox>
   </section>
 </template>
 

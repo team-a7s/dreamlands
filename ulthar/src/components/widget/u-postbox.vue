@@ -22,7 +22,7 @@
       </md-card-content>
       <md-card-actions>
         <md-button
-          type="button" class="md-primary"
+          type="button" class="md-primary md-raised"
           @click="postSubmit()"
           :disabled="!sessionQuery || !sessionQuery.currentUser"
         >
@@ -44,17 +44,44 @@ export default {
   },
   data() {
     return {
+      showSnackbar: false,
       postTitle: '',
       postContent: '',
     };
   },
+  props: [
+    'parent-id',
+    'post-type',
+  ],
   methods: {
     postSubmit() {
       this.$apollo.provider.defaultClient.mutate({
         mutation: gql`
-        mutation {
-          post()
+        mutation(
+          $parentId: String!
+          $postType: PostType!
+          $title: String!
+          $content: String!
+        ) {
+          post(
+            parentId: $parentId
+            type: $postType
+            title: $title
+            content: $content
+          ){
+            id
+          }
         }`,
+        variables: {
+          parentId: this.$props.parentId,
+          postType: this.$props.postType,
+          title: this.postTitle,
+          content: this.postContent,
+        },
+      }).then((o) => {
+        console.log(o);
+      }).catch((err) => {
+        this.$store.commit('error', err);
       });
     },
   },
