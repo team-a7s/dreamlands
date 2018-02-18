@@ -9,9 +9,11 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Hashids\Hashids;
 use Kadath\Action\NotFoundAction;
+use Kadath\Adapters\KadathLogger;
 use Kadath\Adapters\RedisKeyValue;
 use Kadath\Adapters\RouteDefinition;
 use Kadath\Adapters\RouterStubResolver;
+use Kadath\Database\AbstractRepository;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\KadathObjectRepository;
 use Kadath\GraphQL\NodeIdentify;
@@ -23,6 +25,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 use League\OAuth2\Client\Provider\Github;
 use Lit\Air\Configurator as C;
+use Lit\Air\Factory;
 use Lit\Bolt\BoltContainer;
 use Lit\Bolt\BoltRouterApp;
 use Lit\Core\Interfaces\RouterInterface;
@@ -32,12 +35,22 @@ use Lit\Griffin\ObjectClassGenerator;
 use Lit\Griffin\ObjectRepositoryInterface;
 use Lit\Griffin\SourceBuilder;
 use Lit\Nexus\Cache\CacheKeyValue;
+use Lit\Nexus\Derived\PrefixKeyValue;
 use Lit\Nexus\Derived\SlicedValue;
+use Lit\Nexus\Interfaces\KeyValueInterface;
+use Lit\Nexus\Traits\KeyValueTrait;
 use Lit\Router\FastRoute\CachedDispatcher;
 use Lit\Router\FastRoute\FastRouteRouter;
 use Predis\Client as RedisClient;
 use FastRoute;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Class KadathContainer
+ * @package Kadath
+ *
+ * @property KeyValueInterface|KeyValueTrait $memoryCache
+ */
 class KadathContainer extends BoltContainer
 {
     const MEMORY_CACHE = 'memoryCache';
@@ -54,8 +67,8 @@ class KadathContainer extends BoltContainer
                 ),
                 RouterInterface::class => C::instance(FastRouteRouter::class, [
                     C::instance(CachedDispatcher::class, [
-                        function (KadathContainer $container) {
-                            return SlicedValue::slice($container->get(self::MEMORY_CACHE), 'route');
+                        function () {
+                            return $this->memoryCache->slice('route');
                         },
                         C::instance(\FastRoute\RouteParser\Std::class),
                         C::instance(\FastRoute\DataGenerator\GroupCountBased::class),
@@ -68,20 +81,16 @@ class KadathContainer extends BoltContainer
 
                 //Kadath
                 SessionMiddleware::class => C::provideParameter([
-                    'storage' => C::decorateCallback(C::singleton(
-                        RedisKeyValue::class,
-                        ['expire' => 7200]
-                    ), function (callable $delegate, $container, $id) {
-                        /** @var RedisKeyValue $storage */
-                        $storage = $delegate();
-                        return $storage->prefix('kad');
-                    }),
+                    'storage' => $this->redisCache(7200, 'session:'),
                 ]),
                 RedisClient::class => C::provideParameter(json_decode($_ENV[Kadath::ENV_REDIS_PARAM], true)),
                 Connection::class => function () {
-                    return DriverManager::getConnection([
+                    $connection = DriverManager::getConnection([
                         'url' => $_ENV[Kadath::ENV_DATABASE_DSN],
                     ]);
+
+                    $connection->getConfiguration()->setSQLLogger(KadathLogger::instance());
+                    return $connection;
                 },
                 NodeIdentify::class => C::provideParameter([
                     Hashids::class => C::singleton(Hashids::class, [
@@ -100,6 +109,12 @@ class KadathContainer extends BoltContainer
                 self::MEMORY_CACHE => function (ApcuCachePool $pool) {
                     return new CacheKeyValue($pool);
                 },
+                LoggerInterface::class => function () {
+                    return KadathLogger::instance();
+                },
+                AbstractRepository::class . '::' => [ //inject to all child class
+                    'cache' => $this->redisCache(3600, 'db:'),
+                ],
 
                 //Griffin
                 Context::class => C::produce(KadathContext::class),
@@ -112,8 +127,8 @@ class KadathContainer extends BoltContainer
                     'namespace' => KadathObjectRepository::TYPE_NAMESPACE,
                 ]),
                 SourceBuilder::class => C::provideParameter([
-                    'cache' => function (ApcuCachePool $pool) {
-                        return (new CacheKeyValue($pool))->slice('graphql_source');
+                    'cache' => function () {
+                        return $this->memoryCache->slice('graphql_source');
                     },
                     'path' => __DIR__ . '/schema.graphqls',
                 ]),
@@ -121,5 +136,16 @@ class KadathContainer extends BoltContainer
 
 
         parent::__construct(($config ?: []) + $defaultConfiguration);
+    }
+
+    protected function redisCache($expire, $prefix)
+    {
+        return function () use ($prefix, $expire) {
+            /** @noinspection PhpParamsInspection */
+            return PrefixKeyValue::wrap(
+                Factory::of($this)->instantiate(RedisKeyValue::class, ['expire' => $expire]),
+                $prefix
+            );
+        };
     }
 }

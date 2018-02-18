@@ -6,6 +6,7 @@ use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Lit\Nexus\Interfaces\KeyValueInterface;
 
 abstract class AbstractRepository
 {
@@ -36,10 +37,15 @@ abstract class AbstractRepository
      * @var Connection
      */
     protected $connection;
+    /**
+     * @var KeyValueInterface
+     */
+    protected $cache;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, ?KeyValueInterface $cache = null)
     {
         $this->connection = $connection;
+        $this->cache = $cache;
     }
 
     /**
@@ -64,7 +70,9 @@ abstract class AbstractRepository
         $rowcnt = $qb->execute();
 
         if ($rowcnt > 0 && $value instanceof AbstractRecord) {
-            $value->{static::PK_FIELD} = $this->connection->lastInsertId();
+            $lastInsertId = $this->connection->lastInsertId();
+            $value->{static::PK_FIELD} = $lastInsertId;
+            $this->cache->set(self::cacheKey($lastInsertId), serialize($value));
         }
 
         return $rowcnt;
@@ -155,11 +163,24 @@ abstract class AbstractRepository
      */
     public function find($pkValue)
     {
-        return $this
+        $key = static::cacheKey($pkValue);
+        if ($this->cache->exists($key)) {
+            return unserialize($this->cache->get($key));
+        }
+        $result = $this
             ->select([
                 static::PK_FIELD => $pkValue
             ], 1)
             ->fetch() ?: null;
+        if ($result) {
+            $this->cache->set($key, serialize($result));
+        }
+        return $result;
+    }
+
+    protected static function cacheKey($pkValue)
+    {
+        return substr(static::class, 29) . ':' . $pkValue;
     }
 
     protected function qb(): QueryBuilder

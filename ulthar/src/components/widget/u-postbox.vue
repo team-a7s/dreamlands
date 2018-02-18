@@ -1,6 +1,6 @@
 <template>
   <div class="postbox">
-    <md-card>
+    <md-card class="md-primary">
       <md-card-content>
         <u-login></u-login>
         <div class="md-layout">
@@ -88,7 +88,20 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+  @import "~vue-material/src/theme/engine";
+  @import "~vue-material/src/components/MdElevation/mixins";
+
+  .postbox {
+    margin-bottom: 1em;
+    > .md-card {
+      @include md-elevation(5);
+      background-image: url(../../img/postbox-bg.jpg);
+      background-position: center;
+      background-size: cover;
+    }
+  }
+
   .title-label {
     justify-content: flex-end;
   }

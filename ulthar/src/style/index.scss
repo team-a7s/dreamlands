@@ -1,5 +1,8 @@
 //@import '~normalize.css';
 
-.md-app {
-  min-height: 100vh;
+@media screen and (min-height: 481px) {
+  body {
+    width: 480px;
+    margin: auto;
+  }
 }

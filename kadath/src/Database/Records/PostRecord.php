@@ -53,6 +53,7 @@ class PostRecord extends AbstractRecord implements TablePost, ExportableInterfac
             'content' => $this->content,
             'contentType' => $this->content_type,
             'via' => $this->via,
+            'created' => $this->created_at,
             'parentId' => function ($src, array $args, KadathContext $context, ResolveInfo $resolveInfo) {
                 return $context->nodeIdentify->encodeId(self::$parentNodeType[$this->type], $this->parent_id);
             },

@@ -37,7 +37,7 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
     {
         $pagination = PaginationArgument::fromArray($this->args['page']);
         $where = $this->resolveWhere($this->args);
-        $order = $this->resolveOrder($this->args);
+        $order = $this->resolveOrder($this->args, $pagination);
 
         $this->prepare($this->getRepo(), $where, $order, $pagination);
 
@@ -140,7 +140,7 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
         return [];
     }
 
-    protected function resolveOrder(array $args): array
+    protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
     {
         return [];
     }
@@ -150,7 +150,8 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
         array $where,
         array $order,
         PaginationArgument $paginationArgument
-    ): void {
+    ): void
+    {
         $cursor = $paginationArgument->getCursor();
         if (!empty($cursor)) {
             $hash = static::queryHash($where, $order);
@@ -186,10 +187,7 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
 
     protected function parseCursorOrder(array $cursor, AbstractRepository $repo, PaginationArgument $paginationArgument)
     {
-        if (empty($cursor)) {
-            throw KadathException::badRequest('bad cursor');
-        }
-        $order = $paginationArgument->isForward() ? 'ASC' : 'DESC';
+        $order = $paginationArgument->isForward() ? 1 : -1;
 
         return [
             $repo::PK_FIELD => $order,

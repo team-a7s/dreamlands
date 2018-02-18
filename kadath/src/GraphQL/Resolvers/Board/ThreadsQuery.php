@@ -9,6 +9,7 @@ use Kadath\Database\Records\BoardRecord;
 use Kadath\Database\Records\PostRecord;
 use Kadath\Database\Repositories\PostRepo;
 use Kadath\GraphQL\AbstractConnectionQuery;
+use Kadath\Pagination\PaginationArgument;
 
 class ThreadsQuery extends AbstractConnectionQuery
 {
@@ -45,5 +46,10 @@ class ThreadsQuery extends AbstractConnectionQuery
             'type' => PostRecord::POST_TYPE_THREAD,
             'parent_id' => $this->parent->id,
         ];
+    }
+
+    protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
+    {
+        return ['touched_at' => $paginationArgument->isForward() ? -1 : 1];
     }
 }

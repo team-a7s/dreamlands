@@ -50,6 +50,7 @@ type Post implements Node {
     type: PostType!
     content: String!
     contentType: Int!
+    created: Int!
     via: String!
     parentId: String!
     parentNode: Node!

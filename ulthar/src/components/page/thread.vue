@@ -1,23 +1,21 @@
 <template>
-  <section class="thread">
-    <md-card v-if="threadQuery">
-      <md-card-header>
-        <md-avatar>
-          <img :src="threadQuery.author.avatar" alt="Avatar">
-        </md-avatar>
+  <md-card v-if="threadQuery">
+    <md-card-header>
+      <md-avatar>
+        <img :src="threadQuery.author.avatar" alt="Avatar">
+      </md-avatar>
 
-        <div class="md-title">{{threadQuery.author.displayName}}</div>
-        <div class="md-subhead">Subtitle here</div>
-      </md-card-header>
-      <md-card-header>
-        <div class="md-title">{{threadQuery.title}}</div>
-      </md-card-header>
-      <md-card-content>
-        {{threadQuery.content}}
-      </md-card-content>
-    </md-card>
+      <div class="md-title">{{threadQuery.author.displayName}}</div>
+      <div class="md-subhead">Subtitle here</div>
+    </md-card-header>
+    <md-card-header>
+      <div class="md-title">{{threadQuery.title}}</div>
+    </md-card-header>
+    <md-card-content>
+      {{threadQuery.content}}
+    </md-card-content>
     <script type="foo" v-if="board">{{board.name}}</script>
-  </section>
+  </md-card>
 </template>
 
 <script>

@@ -20,6 +20,7 @@ export const postFragment = gql`fragment postFragment on Post {
   via
   parentId
   type
+  created
 }
 `;
 

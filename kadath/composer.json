@@ -27,6 +27,7 @@
         "webonyx/graphql-php": "^0.11.5",
         "yzalis/identicon": "^1.2",
         "litphp/litphp": "^0.8.0@dev",
-        "symfony/finder": "^4.0"
+        "symfony/finder": "^4.0",
+        "monolog/monolog": "^1.23"
     }
 }

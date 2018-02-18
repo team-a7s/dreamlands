@@ -2,12 +2,20 @@
   <section class="board" v-if="board">
     <u-postbox
       :parent-id="board.id" post-type="THREAD"
+      v-if="showPostBox"
     >
       <span class="label">{{board.name}}</span>
     </u-postbox>
 
-    <md-list class="md-double-line" v-if="threadsQuery">
-      <md-subheader>{{board.name}}</md-subheader>
+    <md-list class="md-double-line md-dense" v-if="threadsQuery">
+      <md-subheader>
+        <span>
+          {{board.name}}
+        </span>
+        <md-button class="icon-add md-icon-button" @click="showPostBox=!showPostBox">
+          <md-icon>{{showPostBox?'clear':'add'}}</md-icon>
+        </md-button>
+      </md-subheader>
       <md-list-item
         v-for="thread in threadsQuery.threads.nodes" :key="thread.id"
         :to="`/thread/${thread.id}`">
@@ -35,7 +43,9 @@ export default {
   name: 'board',
   props: ['id'],
   data() {
-    return {};
+    return {
+      showPostBox: false,
+    };
   },
   computed: {
     board() {
@@ -98,5 +108,9 @@ export default {
 </script>
 
 <style scoped>
-
+  .icon-add {
+    flex: 0 0 auto;
+    margin-left: auto;
+    margin-right: 0;
+  }
 </style>
