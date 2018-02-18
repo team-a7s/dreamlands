@@ -75,7 +75,7 @@ export default {
           },
         });
 
-        this.showMessage('登录成功');
+        this.$store.commit('error', '登录成功');
       }).catch(this.handleError.bind(this));
     }, // doLogin()
     doSpawn() {
@@ -159,7 +159,7 @@ export default {
         msg = msg.slice(15);
       }
 
-      this.showMessage(`处理失败，原因：<br>${msg}`);
+      this.$store.commit('error', `处理失败，原因：<br>${msg}`);
       console.warn(err);
     },
   },

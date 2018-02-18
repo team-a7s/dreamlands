@@ -6,7 +6,12 @@
           <!--<md-icon>menu</md-icon>-->
           <font-awesome-icon :icon="$store.state.icon" class="fa-2x" fixed-width/>
         </md-button>
-        <span class="md-title">{{$store.state.title}}</span>
+        <router-link :to="$store.state.titleHref" class="md-title" v-if="$store.state.titleHref">
+          {{$store.state.title}}
+        </router-link>
+        <span class="md-title" v-else>
+          {{$store.state.title}}
+        </span>
       </md-app-toolbar>
 
       <md-app-drawer :md-active.sync="menuVisible">
@@ -21,7 +26,7 @@
           :md-duration="4000" :md-active.sync="showSnackbar" md-persistent
           @md-closed="handleError()"
         >
-          <span>{{errorMessage}}</span>
+          <span>{{message}}</span>
         </md-snackbar>
       </md-app-content>
     </md-app>
@@ -30,6 +35,7 @@
 </template>
 
 <script>
+import throttle from 'lodash.throttle';
 
 export default {
   name: 'App',
@@ -37,11 +43,11 @@ export default {
     return {
       menuVisible: false,
       showSnackbar: false,
-      errorMessage: '',
+      message: '',
     };
   },
   methods: {
-    handleError() {
+    handleError: throttle(function handleError() {
       if (!this.$store.state.error || this.showSnackbar) {
         return;
       }
@@ -54,14 +60,25 @@ export default {
         msg = msg.slice(15);
       }
 
-      this.errorMessage = msg;
+      this.message = msg;
       this.showSnackbar = true;
-    },
+    }, 5000),
   },
   mounted() {
-    this.$store.subscribe(() => {
-      setTimeout(_ => this.handleError());
+    this._unbind = this.$store.subscribe((mutation, state) => {
+      this.$nextTick(() => {
+        this.menuVisible = false;
+      });
+
+      if (!state.error) {
+        return;
+      }
+
+      this.handleError();
     });
+  },
+  destroyed() {
+    this._unbind();
   },
 };
 </script>

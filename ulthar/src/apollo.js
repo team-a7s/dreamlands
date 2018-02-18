@@ -10,7 +10,7 @@ import { setContext } from 'apollo-link-context';
 Vue.use(VueApollo);
 
 const cache = new InMemoryCache({
-  dataIdFromObject: obj => `${obj.__typename}_${obj.id}`,
+  dataIdFromObject: obj => (obj.id ? `${obj.__typename}_${obj.id}` : null),
 });
 
 const httpLink = new HttpLink({

@@ -1,12 +1,14 @@
 <template>
   <section class="nav">
-    <md-list v-if="boards" class="board-list">
-      <md-list-item v-for="board in boards.nodes" :key="board.id">
-        <md-icon>move_to_inbox</md-icon>
-        <router-link :to="'/board/' + board.id" class="board-link md-list-item-text">
+    <md-list v-if="boards" class="md-double-line md-dense">
+      <md-list-item v-for="board in boards.nodes" :key="board.id"
+                    :to="'/board/' + board.id" class="board-link md-list-item-text"
+      >
+        <!--<md-icon>move_to_inbox</md-icon>-->
+        <div class="md-list-item-text">
           <span>{{board.name}}</span>
-          <span class="muted">{{board.tagline}}</span>
-        </router-link>
+          <span>{{board.tagline}}</span>
+        </div>
       </md-list-item>
     </md-list>
   </section>

@@ -22,13 +22,15 @@ export function createStore() {
   return new Vuex.Store({
     state: {
       title: 'loading...',
+      titleHref: null,
       icon: 'gamepad',
       error: null,
     },
 
     mutations: {
-      setTitle(state, title) {
+      setTitle(state, { title, titleHref }) {
         state.title = title;
+        state.titleHref = titleHref;
       },
       pickIcon(state) {
         state.icon = iconPool[Math.floor(Math.random() * iconPool.length)];

@@ -78,8 +78,8 @@ export default {
           title: this.postTitle,
           content: this.postContent,
         },
-      }).then((o) => {
-        console.log(o);
+      }).then(() => {
+        this.$store.commit('error', '发布成功');
       }).catch((err) => {
         this.$store.commit('error', err);
       });

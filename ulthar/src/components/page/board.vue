@@ -5,11 +5,31 @@
     >
       <span class="label">{{board.name}}</span>
     </u-postbox>
+
+    <md-list class="md-double-line" v-if="threadsQuery">
+      <md-subheader>{{board.name}}</md-subheader>
+      <md-list-item
+        v-for="thread in threadsQuery.threads.nodes" :key="thread.id"
+        :to="`/thread/${thread.id}`">
+
+        <md-avatar class="avatar">
+          <router-link :to="`/user/${thread.author.id}`">
+            <img :src="thread.author.avatar" alt="">
+            <md-tooltip md-direction="bottom">{{thread.author.displayName}}</md-tooltip>
+          </router-link>
+        </md-avatar>
+        <div class="md-list-item-text">
+          <span>{{thread.title}}</span>
+          <span>{{thread.content}}</span>
+        </div>
+      </md-list-item>
+    </md-list>
   </section>
 </template>
 
 <script>
 import gql from 'graphql-tag';
+import { boardQuery, postFragment, userFragment, boardFragment } from '@/query';
 
 export default {
   name: 'board',
@@ -21,40 +41,26 @@ export default {
     board() {
       return this.$apollo.provider.defaultClient.readFragment({
         id: `Board_${this.id}`,
-        fragment: gql`fragment x on Board {
-          id
-          name
-          tagline
-        }`,
+        fragment: boardFragment,
       }) || this.boardQuery;
     },
   },
   apollo: {
     boardQuery: {
-      query: gql`
-        query($boardId:ID!) {
-          boardQuery: node(id:$boardId) {
-            ... on Board {
-              id
-              name
-              tagline
-            }
-          }
-        }
-      `,
+      query: boardQuery,
       variables() {
         return {
-          boardId: this.id,
+          id: this.id,
         };
       },
       skip() {
         return !!this.board;
       },
     },
-    threads: {
+    threadsQuery: {
       query: gql`
         query($boardId:ID!, $after:String) {
-          threads: node(id:$boardId) {
+          threadsQuery: node(id:$boardId) {
             id
             ... on Board {
               threads(page: {
@@ -62,12 +68,17 @@ export default {
                 after: $after
               }) {
                 nodes{
-                  title
+                  ...postFragment
+                  author {
+                    ...userFragment
+                  }
                 }
               }
             }
           }
         }
+        ${postFragment}
+        ${userFragment}
       `,
       variables() {
         return {
@@ -78,7 +89,10 @@ export default {
   },
   updated() {
     if (!this.board) { return; }
-    this.$store.commit('setTitle', this.board.name);
+    this.$store.commit({
+      type: 'setTitle',
+      title: this.board.name,
+    });
   },
 };
 </script>
