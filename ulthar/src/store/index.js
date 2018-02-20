@@ -16,6 +16,9 @@ const iconPool = [
   ['fas', 'fire'],
   ['fas', 'gamepad'],
   ['fas', 'flask'],
+  ['fas', 'quidditch'],
+  ['fas', 'transgender-alt'],
+  ['fas', 'trophy'],
 ];
 
 export function createStore() {

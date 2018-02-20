@@ -142,7 +142,12 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
 
     protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
     {
-        return [];
+        $repo = $this->getRepo();
+        $order = $paginationArgument->isForward() ? 1 : -1;
+
+        return [
+            $repo::PK_FIELD => $order,
+        ];
     }
 
     protected function prepare(
@@ -161,8 +166,7 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
             }
 
             array_shift($cursor);
-            $cursorWhere = $this->parseCursorWhere($cursor, $repo, $paginationArgument) + $where;
-            $order = array_merge($order, $this->parseCursorOrder($cursor, $repo, $paginationArgument));
+            $cursorWhere = array_merge($where, $this->parseCursorWhere($cursor, $repo, $paginationArgument));
         } else {
             $cursorWhere = $where;
         }
@@ -182,15 +186,6 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
 
         return [
             $repo::PK_FIELD => [$method => $cursor[0]],
-        ];
-    }
-
-    protected function parseCursorOrder(array $cursor, AbstractRepository $repo, PaginationArgument $paginationArgument)
-    {
-        $order = $paginationArgument->isForward() ? 1 : -1;
-
-        return [
-            $repo::PK_FIELD => $order,
         ];
     }
 

@@ -61,10 +61,7 @@ class PostMutation extends AbstractKadathResolver
         $post->type = PostRecord::POST_TYPE_POST;
         $post->parent_id = $thread->id;
 
-        if (empty($post->title)) {
-            throw KadathException::badRequest('empty title');
-        }
-
+        $post->validate();
         $this->postRepo->insert($post);
 
         return $post;
@@ -87,10 +84,7 @@ class PostMutation extends AbstractKadathResolver
         $post->type = PostRecord::POST_TYPE_THREAD;
         $post->parent_id = $board->id;
 
-        if (empty($post->title)) {
-            throw KadathException::badRequest('empty title');
-        }
-
+        $post->validate();
         $this->postRepo->insert($post);
 
         return $post;

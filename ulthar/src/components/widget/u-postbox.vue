@@ -1,12 +1,12 @@
 <template>
   <div class="postbox">
-    <md-card class="md-primary">
-      <md-card-content>
+    <md-card class="md-elevation-5">
+      <md-card-content v-if="!loading">
         <u-login></u-login>
         <div class="md-layout">
-          <md-field class="md-layout-item">
+          <md-field class="md-layout-item field-title">
             <label>标题</label>
-            <md-input name="title" placeholder="标题" v-model="postTitle"></md-input>
+            <md-input maxlength="30" name="title" placeholder="标题" v-model="postTitle"></md-input>
           </md-field>
           <md-field class="md-layout-item md-small-size-35 md-medium-size-20 title-label">
             <slot></slot>
@@ -20,7 +20,7 @@
           ></md-textarea>
         </md-field>
       </md-card-content>
-      <md-card-actions>
+      <md-card-actions v-if="!loading">
         <md-button
           type="button" class="md-primary md-raised"
           @click="postSubmit()"
@@ -29,13 +29,18 @@
           POST
         </md-button>
       </md-card-actions>
+      <md-card-content v-else>
+        <div class="md-layout md-alignment-center loading">
+          <font-awesome-icon :icon="['fas', 'spinner']" class="fa-spin fa-3x"></font-awesome-icon>
+        </div>
+      </md-card-content>
     </md-card>
   </div>
 </template>
 
 <script>
 import gql from 'graphql-tag';
-import { sessionQuery } from '@/query';
+import { postMutation, sessionQuery } from '@/query';
 
 export default {
   name: 'u-postbox',
@@ -47,6 +52,7 @@ export default {
       showSnackbar: false,
       postTitle: '',
       postContent: '',
+      loading: false,
     };
   },
   props: [
@@ -55,33 +61,26 @@ export default {
   ],
   methods: {
     postSubmit() {
+      const variables = {
+        parentId: this.$props.parentId,
+        postType: this.$props.postType,
+        title: this.postTitle,
+        content: this.postContent,
+      };
+      this.postTitle = '';
+      this.postContent = '';
+      this.loading = true;
+
       this.$apollo.provider.defaultClient.mutate({
-        mutation: gql`
-        mutation(
-          $parentId: String!
-          $postType: PostType!
-          $title: String!
-          $content: String!
-        ) {
-          post(
-            parentId: $parentId
-            type: $postType
-            title: $title
-            content: $content
-          ){
-            id
-          }
-        }`,
-        variables: {
-          parentId: this.$props.parentId,
-          postType: this.$props.postType,
-          title: this.postTitle,
-          content: this.postContent,
-        },
-      }).then(() => {
+        mutation: postMutation,
+        variables,
+      }).then((response) => {
         this.$store.commit('error', '发布成功');
+        this.$emit('posted', { response });
+        this.loading = false;
       }).catch((err) => {
         this.$store.commit('error', err);
+        this.loading = false;
       });
     },
   },
@@ -89,13 +88,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  @import "~vue-material/src/theme/engine";
-  @import "~vue-material/src/components/MdElevation/mixins";
-
   .postbox {
     margin-bottom: 1em;
     > .md-card {
-      @include md-elevation(5);
       background-image: url(../../img/postbox-bg.jpg);
       background-position: center;
       background-size: cover;
@@ -104,5 +99,19 @@ export default {
 
   .title-label {
     justify-content: flex-end;
+  }
+
+  .loading {
+    height: 304px;
+  }
+
+  /deep/ .field-title {
+    .md-count {
+      display: none;
+    }
+  }
+
+  /deep/ .md-field {
+    margin-bottom: 12px;
   }
 </style>

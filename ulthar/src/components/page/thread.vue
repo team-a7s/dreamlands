@@ -1,21 +1,30 @@
 <template>
-  <md-card v-if="threadQuery">
-    <md-card-header>
-      <md-avatar>
-        <img :src="threadQuery.author.avatar" alt="Avatar">
-      </md-avatar>
+  <section class="thread" v-if="threadQuery">
+    <u-postbox
+      :parent-id="threadQuery.id" post-type="POST"
+    >
+      <span class="label">{{threadQuery.title}}</span>
+    </u-postbox>
+    <md-card>
+      <md-card-header>
+        <md-avatar>
+          <img :src="threadQuery.author.avatar" alt="Avatar">
+        </md-avatar>
 
-      <div class="md-title">{{threadQuery.author.displayName}}</div>
-      <div class="md-subhead">Subtitle here</div>
-    </md-card-header>
-    <md-card-header>
-      <div class="md-title">{{threadQuery.title}}</div>
-    </md-card-header>
-    <md-card-content>
-      {{threadQuery.content}}
-    </md-card-content>
-    <script type="foo" v-if="board">{{board.name}}</script>
-  </md-card>
+        <div class="md-title">{{threadQuery.author.displayName}}</div>
+        <div class="md-subhead">{{threadQuery.created | datetime}}</div>
+      </md-card-header>
+      <md-card-header>
+        <div class="md-title">{{threadQuery.title}}</div>
+      </md-card-header>
+      <md-card-content>
+        <u-postcontent
+          :content-type="threadQuery.contentType" :content="threadQuery.content"
+        ></u-postcontent>
+      </md-card-content>
+      <script type="foo" v-if="board">{{board.name}}</script>
+    </md-card>
+  </section>
 </template>
 
 <script>

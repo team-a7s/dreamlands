@@ -60,3 +60,19 @@ ${userFragment}
 ${postFragment}
 `;
 
+export const postMutation = gql`
+  mutation(
+  $parentId: String!
+  $postType: PostType!
+  $title: String!
+  $content: String!
+  ) {
+    post(
+      parentId: $parentId
+      type: $postType
+      title: $title
+      content: $content
+    ){
+      id
+    }
+  }`;

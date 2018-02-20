@@ -48,6 +48,7 @@ module.exports = {
         optionalDependencies: ['test/unit/index.js'],
       }],
     'no-underscore-dangle': 0,
+    'import/prefer-default-export': 0,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     // allow console during development
@@ -57,7 +58,7 @@ module.exports = {
       ? 'off'
       : [
         'warn',
-        {'varsIgnorePattern': '^_'},
+        { 'varsIgnorePattern': '^_' },
       ],
   },
 };

@@ -7,6 +7,7 @@ namespace Kadath\Database\Records;
 use GraphQL\Type\Definition\ResolveInfo;
 use Kadath\Database\AbstractRecord;
 use Kadath\Database\TablePost;
+use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\NodeIdentify;
 use Kadath\GraphQL\Type\ContentTypeEnum;
@@ -61,5 +62,16 @@ class PostRecord extends AbstractRecord implements TablePost, ExportableInterfac
                 return $context->fetchNode(self::$parentNodeType[$this->type], $this->parent_id);
             },
         ];
+    }
+
+    public function validate()
+    {
+        if (empty($this->title) && $this->type === self::POST_TYPE_THREAD) {
+            throw KadathException::badRequest('empty title');
+        }
+
+        if (mb_strlen($this->title) > 30) {
+            throw KadathException::badRequest('title too long');
+        }
     }
 }

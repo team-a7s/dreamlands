@@ -4,6 +4,7 @@ import VueMaterial from 'vue-material';
 
 import App from '@/App';
 import components from '@/components';
+import * as filters from '@/filters';
 import router from '@/router';
 import store from '@/store';
 import apolloMixin from '@/apollo';
@@ -26,8 +27,10 @@ router.afterEach(() => {
   }
 });
 
-Object.keys(components).forEach(key => Vue.component(key, components[key]));
+// Object.keys(components).forEach(key => Vue.component(key, components[key]));
 Vue.use(VueMaterial);
+Object.assign(Vue.options.components, components);
+Object.assign(Vue.options.filters, filters);
 
 fontawesome.library.add(brands, solid);
 window.v = new Vue(Object.assign({

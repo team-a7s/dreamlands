@@ -79,7 +79,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|QueryBuilderCallback $where
+     * @param array|WhereCallback $where
      * @param int $limit
      * @param int $offset
      * @return Statement
@@ -104,7 +104,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|QueryBuilderCallback $where
+     * @param array|WhereCallback $where
      * @return mixed
      * @throws \Exception
      */
@@ -123,7 +123,7 @@ abstract class AbstractRepository
 
     /**
      * @param array $values
-     * @param array|QueryBuilderCallback $where
+     * @param array|WhereCallback $where
      * @param int $limit
      * @return int
      * @throws \Exception
@@ -141,7 +141,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|QueryBuilderCallback $where
+     * @param array|WhereCallback $where
      * @param int $limit
      * @return int
      * @throws \Exception
@@ -195,14 +195,19 @@ abstract class AbstractRepository
      */
     protected function resolveWhere(QueryBuilder $qb, $where)
     {
-        if ($where instanceof QueryBuilderCallback) {
-            $where->__invoke($qb);
+        $eb = $qb->expr();
+        $builder = new WhereBuilder($qb);
+        if ($where instanceof WhereCallback) {
+            $qb->andWhere($where($builder));
             return;
         }
 
         if (is_array($where)) {
-            $eb = $qb->expr();
             foreach ($where as $key => $value) {
+                if ($value instanceof WhereCallback) {
+                    $qb->andWhere($value($builder));
+                    return;
+                }
                 foreach (self::$whereSuffix as $suffix => $method) {
                     $len = strlen($suffix);
                     if (strlen($key) <= $len || substr($key, -$len) !== $suffix) {

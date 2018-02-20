@@ -3,6 +3,7 @@
     <u-postbox
       :parent-id="board.id" post-type="THREAD"
       v-if="showPostBox"
+      @posted="onPosted()"
     >
       <span class="label">{{board.name}}</span>
     </u-postbox>
@@ -28,10 +29,18 @@
         </md-avatar>
         <div class="md-list-item-text">
           <span>{{thread.title}}</span>
-          <span>{{thread.content}}</span>
+          <p>{{thread.content}}</p>
         </div>
       </md-list-item>
     </md-list>
+
+    <div class="md-layout md-alignment-center"
+         v-if="threadsQuery && threadsQuery.threads.pageInfo.hasNextPage"
+    >
+      <md-button class="md-icon-button md-raised md-primary" @click="fetchMore">
+        <font-awesome-icon :icon="['fas', 'ellipsis-h']"></font-awesome-icon>
+      </md-button>
+    </div>
   </section>
 </template>
 
@@ -55,6 +64,34 @@ export default {
       }) || this.boardQuery;
     },
   },
+  methods: {
+    fetchMore() {
+      this.$apollo.queries.threadsQuery.fetchMore({
+        variables: {
+          after: this.threadsQuery.threads.pageInfo.endCursor,
+        },
+        updateQuery(previousResult, { fetchMoreResult }) {
+          const threads = fetchMoreResult.threadsQuery.threads;
+          if (!threads.nodes.length) {
+            return previousResult;
+          }
+
+          return Object.assign({}, previousResult, {
+            threadsQuery: Object.assign({}, previousResult.threadsQuery, {
+              threads: {
+                nodes: [...previousResult.threadsQuery.threads.nodes, ...threads.nodes],
+                pageInfo: threads.pageInfo,
+              },
+            }),
+          });
+        },
+      });
+    },
+    onPosted() {
+      this.showPostBox = false;
+      this.$apollo.queries.threadsQuery.refetch();
+    },
+  },
   apollo: {
     boardQuery: {
       query: boardQuery,
@@ -74,7 +111,7 @@ export default {
             id
             ... on Board {
               threads(page: {
-                first:10
+                first: 13
                 after: $after
               }) {
                 nodes{
@@ -82,6 +119,10 @@ export default {
                   author {
                     ...userFragment
                   }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
                 }
               }
             }
@@ -93,6 +134,7 @@ export default {
       variables() {
         return {
           boardId: this.id,
+          after: null,
         };
       },
     },
