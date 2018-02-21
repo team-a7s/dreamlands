@@ -10,6 +10,7 @@ use Kadath\Database\TablePost;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\NodeIdentify;
+use Kadath\GraphQL\Resolvers\Board\PostsQuery;
 use Kadath\GraphQL\Type\ContentTypeEnum;
 use Kadath\GraphQL\Type\PostTypeEnum;
 use Lit\Griffin\ExportableInterface;
@@ -61,6 +62,7 @@ class PostRecord extends AbstractRecord implements TablePost, ExportableInterfac
             'parentNode' => function ($src, array $args, KadathContext $context, ResolveInfo $resolveInfo) {
                 return $context->fetchNode(self::$parentNodeType[$this->type], $this->parent_id);
             },
+            'posts' => $this->delegateResolver(PostsQuery::class),
         ];
     }
 
@@ -69,9 +71,15 @@ class PostRecord extends AbstractRecord implements TablePost, ExportableInterfac
         if (empty($this->title) && $this->type === self::POST_TYPE_THREAD) {
             throw KadathException::badRequest('empty title');
         }
+        if (empty($this->content) && $this->type === self::POST_TYPE_POST) {
+            throw KadathException::badRequest('empty content');
+        }
 
         if (mb_strlen($this->title) > 30) {
             throw KadathException::badRequest('title too long');
+        }
+        if (mb_strlen($this->content) > 401) {
+            throw KadathException::badRequest('content too long');
         }
     }
 }

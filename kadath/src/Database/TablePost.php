@@ -15,7 +15,6 @@ namespace Kadath\Database;
  * @property int $type
  * @property int $flag
  * @property int $child_count
- * @property array $latest_childs
  * @property string $title
  * @property int $content_type
  * @property string $content

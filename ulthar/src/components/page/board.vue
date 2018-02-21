@@ -2,8 +2,7 @@
   <section class="board" v-if="board">
     <u-postbox
       :parent-id="board.id" post-type="THREAD"
-      v-if="showPostBox"
-      @posted="onPosted()"
+      v-if="showPostBox" @posted="onPosted()"
     >
       <span class="label">{{board.name}}</span>
     </u-postbox>
@@ -46,7 +45,7 @@
 
 <script>
 import gql from 'graphql-tag';
-import { boardQuery, postFragment, userFragment, boardFragment } from '@/query';
+import { boardFragment, boardQuery, postFragment, userFragment } from '@/query';
 
 export default {
   name: 'board',

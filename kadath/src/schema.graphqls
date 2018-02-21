@@ -54,6 +54,7 @@ type Post implements Node {
     via: String!
     parentId: String!
     parentNode: Node!
+    posts(page:PaginationParam!): PostConnection!
 }
 
 type UserSpawnResult {
@@ -102,8 +103,8 @@ enum ContentType {
 }
 
 type BasicPageInfo implements PageInfo {
-    startCursor: String!
-    endCursor: String!
+    startCursor: String
+    endCursor: String
     hasPreviousPage: Boolean!
     hasNextPage: Boolean!
 }
@@ -132,8 +133,8 @@ interface Connection {
 }
 
 interface PageInfo {
-    startCursor: String!
-    endCursor: String!
+    startCursor: String
+    endCursor: String
     hasPreviousPage: Boolean!
     hasNextPage: Boolean!
 }

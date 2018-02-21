@@ -26,5 +26,7 @@ export default {
 </script>
 
 <style scoped>
-
+  .post-content {
+    word-wrap: break-word;
+  }
 </style>

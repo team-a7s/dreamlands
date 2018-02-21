@@ -7,11 +7,11 @@ namespace Kadath;
 use Cache\Adapter\Apcu\ApcuCachePool;
 use Dotenv\Dotenv;
 use Kadath\Middlewares\SessionMiddleware;
+use Kadath\Middlewares\TransactionMiddleware;
 use Lit\Air\Factory;
 use Lit\Bolt\BoltApp;
 use Lit\Bolt\BoltContainer;
 use Lit\Bolt\BoltRouterApp;
-use Lit\Core\Interfaces\RouterInterface;
 use Lit\Middleware\IpAddress\IpAddress;
 use Psr\Container\ContainerInterface;
 use const Lit\Bolt\EVENT_AFTER_LOGIC;
@@ -39,6 +39,7 @@ class Kadath
 
         /** @noinspection PhpParamsInspection */
         $app->getMiddlewarePipe()
+            ->append($factory->getOrProduce(TransactionMiddleware::class))
             ->append($factory->getOrProduce(IpAddress::class))
             ->append($factory->getOrProduce(SessionMiddleware::class));
 

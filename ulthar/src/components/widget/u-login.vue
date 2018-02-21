@@ -13,6 +13,9 @@
         </md-button>
       </div>
     </div>
+    <md-field v-else-if="loading">
+      <label>&nbsp;</label>
+    </md-field>
     <div class="md-layout md-alignment-center-left" v-else>
       <div class="md-layout-item">
         <md-field>
@@ -32,7 +35,6 @@
       :md-active.sync="dialogShow"
       :md-title="dialogTitle"
       :md-content="dialogContent"/>
-
   </section>
 </template>
 
@@ -43,7 +45,13 @@ import { sessionQuery } from '@/query';
 export default {
   name: 'u-login',
   apollo: {
-    sessionQuery,
+    sessionQuery: {
+      query: sessionQuery,
+      loadingKey: 'loading',
+      watchLoading(a, b) {
+        console.log(a, b, this.loading);
+      },
+    },
   },
   data() {
     return {
@@ -51,6 +59,7 @@ export default {
       dialogShow: false,
       dialogTitle: '',
       dialogContent: '',
+      loading: 0,
     };
   },
   methods: {
@@ -159,7 +168,7 @@ export default {
         msg = msg.slice(15);
       }
 
-      this.$store.commit('error', `处理失败，原因：<br>${msg}`);
+      this.$store.commit('error', `处理失败，原因：\n${msg}`);
       console.warn(err);
     },
   },

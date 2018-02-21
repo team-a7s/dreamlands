@@ -8,7 +8,7 @@ namespace Kadath\Database;
 
 use Doctrine\DBAL\Query\QueryBuilder;
 
-class WhereBuilder
+class SqlBuilder
 {
     /**
      * @var QueryBuilder

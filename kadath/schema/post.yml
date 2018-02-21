@@ -29,11 +29,6 @@ columns:
     option:
       notnull: false
   -
-    name: latest_childs
-    type: json
-    option:
-      notnull: false
-  -
     name: title
     type: string
     option:

@@ -15,7 +15,7 @@
         <md-field>
           <label>内容</label>
           <md-textarea
-            name="content" placeholder="内容" md-counter="800"
+            name="content" placeholder="内容" md-counter="300"
             v-model="postContent"
           ></md-textarea>
         </md-field>
@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import gql from 'graphql-tag';
 import { postMutation, sessionQuery } from '@/query';
 
 export default {

@@ -60,6 +60,7 @@ abstract class AbstractRepository
             $valueArr = $value;
         }
 
+        $this->beginTransaction();
         $qb = $this->qb()->insert($this->getQuotedTableName());
         $qb
             ->values(array_combine(
@@ -79,7 +80,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|WhereCallback $where
+     * @param array|SqlCallback $where
      * @param int $limit
      * @param int $offset
      * @return Statement
@@ -104,7 +105,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|WhereCallback $where
+     * @param array|SqlCallback $where
      * @return mixed
      * @throws \Exception
      */
@@ -123,15 +124,22 @@ abstract class AbstractRepository
 
     /**
      * @param array $values
-     * @param array|WhereCallback $where
+     * @param array|SqlCallback $where
      * @param int $limit
      * @return int
      * @throws \Exception
      */
     public function update(array $values, $where, int $limit = 1): int
     {
+        $this->beginTransaction();
         $qb = $this->qb()->update($this->getQuotedTableName());
+        $builder = new SqlBuilder($qb);
         foreach ($values as $fld => $value) {
+            if ($value instanceof SqlCallback) {
+                $qb->set($fld, $value($builder));
+                continue;
+            }
+
             $qb->set($fld, $qb->createNamedParameter($value));
         }
         $this->resolveWhere($qb, $where);
@@ -141,13 +149,14 @@ abstract class AbstractRepository
     }
 
     /**
-     * @param array|WhereCallback $where
+     * @param array|SqlCallback $where
      * @param int $limit
      * @return int
      * @throws \Exception
      */
     public function delete($where, int $limit = 1): int
     {
+        $this->beginTransaction();
         $qb = $this->qb()
             ->delete($this->getQuotedTableName())
             ->setMaxResults($limit);
@@ -196,15 +205,15 @@ abstract class AbstractRepository
     protected function resolveWhere(QueryBuilder $qb, $where)
     {
         $eb = $qb->expr();
-        $builder = new WhereBuilder($qb);
-        if ($where instanceof WhereCallback) {
+        $builder = new SqlBuilder($qb);
+        if ($where instanceof SqlCallback) {
             $qb->andWhere($where($builder));
             return;
         }
 
         if (is_array($where)) {
             foreach ($where as $key => $value) {
-                if ($value instanceof WhereCallback) {
+                if ($value instanceof SqlCallback) {
                     $qb->andWhere($value($builder));
                     return;
                 }
@@ -219,8 +228,12 @@ abstract class AbstractRepository
                     continue 2;
                 }
 
+                if (is_null($value)) {
+                    $qb->andWhere($eb->isNull($key));
+                }
+
                 if (!is_array($value)) {
-                    $qb->andWhere($eb->eq(trim($key), $qb->createNamedParameter($value)));
+                    $qb->andWhere($eb->eq($key, $qb->createNamedParameter($value)));
                     continue;
                 }
 
@@ -277,5 +290,12 @@ abstract class AbstractRepository
             $tableName = static::TABLE_NAME;
         }
         return $this->connection->quoteIdentifier($tableName);
+    }
+
+    public function beginTransaction(): void
+    {
+        if (!$this->connection->isTransactionActive()) {
+            $this->connection->beginTransaction();
+        }
     }
 }

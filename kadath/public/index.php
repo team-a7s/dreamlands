@@ -6,6 +6,6 @@ use Monolog\Handler\ChromePHPHandler;
 
 require(__DIR__ . '/../vendor/autoload.php');
 
-sleep(1);
+usleep(1500);
 KadathLogger::instance()->pushHandler(new ChromePHPHandler());
 Kadath::run();

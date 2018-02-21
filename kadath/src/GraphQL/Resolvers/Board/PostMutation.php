@@ -7,6 +7,8 @@ namespace Kadath\GraphQL\Resolvers\Board;
 use Kadath\Database\Records\BoardRecord;
 use Kadath\Database\Records\PostRecord;
 use Kadath\Database\Repositories\PostRepo;
+use Kadath\Database\SqlBuilder;
+use Kadath\Database\SqlCallback;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\AbstractKadathResolver;
 use Kadath\GraphQL\NodeIdentify;
@@ -41,32 +43,6 @@ class PostMutation extends AbstractKadathResolver
         }
     }
 
-    public function resolvePostPost()
-    {
-        $threadId = $this->args['parentId'];
-        [$type, $id] = $this->context->nodeIdentify->decodeId($threadId);
-        if ($type !== NodeIdentify::TYPE_POST) {
-            throw KadathException::badRequest('thread not found');
-        }
-
-        $thread = $this->context->fetchNode($type, $id);
-        if (!$thread || !$thread instanceof PostRecord) {
-            throw KadathException::badRequest('thread not found');
-        }
-        if ($thread->type !== PostRecord::POST_TYPE_THREAD) {
-            throw KadathException::badRequest('thread not found');
-        }
-
-        $post = $this->populatePostRecord();
-        $post->type = PostRecord::POST_TYPE_POST;
-        $post->parent_id = $thread->id;
-
-        $post->validate();
-        $this->postRepo->insert($post);
-
-        return $post;
-    }
-
     public function resolvePostThread()
     {
         $boardId = $this->args['parentId'];
@@ -99,14 +75,54 @@ class PostMutation extends AbstractKadathResolver
         $post->user_id = $this->context->session()->getCurrentUser()->id;
         $post->flag = 0;
         $post->child_count = 0;
-        $post->latest_childs = '[]';
         $post->title = trim($this->args['title'] ?? '');
-        $post->content = trim($this->args['content'] ?? '');
+        $post->content = preg_replace('#\n{2,}#', "\n", trim($this->args['content'] ?? ''));
         $post->content_type = PostRecord::CONTENT_TYPE_PLAIN;
         $post->created_at = time();
         $post->deleted_at = 0;
         $post->touched_at = Utility::microsecond();
         $post->via = '';
+
+        return $post;
+    }
+
+    public function resolvePostPost()
+    {
+        $threadId = $this->args['parentId'];
+        [$type, $id] = $this->context->nodeIdentify->decodeId($threadId);
+        if ($type !== NodeIdentify::TYPE_POST) {
+            throw KadathException::badRequest('thread not found');
+        }
+
+        $thread = $this->context->fetchNode($type, $id);
+        if (!$thread || !$thread instanceof PostRecord) {
+            throw KadathException::badRequest('thread not found');
+        }
+        if ($thread->type !== PostRecord::POST_TYPE_THREAD) {
+            throw KadathException::badRequest('thread not found');
+        }
+
+        $this->postRepo->update([
+            'child_count' => new class implements SqlCallback
+            {
+                public function __invoke(SqlBuilder $builder)
+                {
+                    return 'child_count + 1';
+                }
+            },
+            'touched_at' => Utility::microsecond(),
+        ], [
+            'id' => $thread->id
+        ]);
+
+        $post = $this->populatePostRecord();
+        $post->type = PostRecord::POST_TYPE_POST;
+        $post->parent_id = $thread->id;
+
+        $post->validate();
+
+
+        $this->postRepo->insert($post);
 
         return $post;
     }
