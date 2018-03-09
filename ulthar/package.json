@@ -31,6 +31,7 @@
     "normalize.css": "^8.0.0",
     "vue": "^2.5.2",
     "vue-apollo": "^3.0.0-alpha.3",
+    "vue-clipboard2": "^0.0.9",
     "vue-material": "^1.0.0-beta-7",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",

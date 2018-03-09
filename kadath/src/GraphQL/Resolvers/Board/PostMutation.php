@@ -102,6 +102,15 @@ class PostMutation extends AbstractKadathResolver
             throw KadathException::badRequest('thread not found');
         }
 
+        $post = $this->populatePostRecord();
+        $post->type = PostRecord::POST_TYPE_POST;
+        $post->parent_id = $thread->id;
+
+        $post->validate();
+
+        $this->postRepo->insert($post);
+
+
         $this->postRepo->update([
             'child_count' => new class implements SqlCallback
             {
@@ -114,15 +123,6 @@ class PostMutation extends AbstractKadathResolver
         ], [
             'id' => $thread->id
         ]);
-
-        $post = $this->populatePostRecord();
-        $post->type = PostRecord::POST_TYPE_POST;
-        $post->parent_id = $thread->id;
-
-        $post->validate();
-
-
-        $this->postRepo->insert($post);
 
         return $post;
     }

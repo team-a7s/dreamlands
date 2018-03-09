@@ -14,7 +14,7 @@
       </div>
     </div>
     <md-field v-else-if="loading">
-      <label>&nbsp;</label>
+      <label>loading...</label>
     </md-field>
     <div class="md-layout md-alignment-center-left" v-else>
       <div class="md-layout-item">
@@ -31,10 +31,20 @@
       </div>
     </div>
 
-    <md-dialog-alert
-      :md-active.sync="dialogShow"
-      :md-title="dialogTitle"
-      :md-content="dialogContent"/>
+
+    <md-dialog :md-active.sync="dialogShow">
+      <md-dialog-title>{{ dialogTitle }}</md-dialog-title>
+      <md-dialog-content v-html="dialogContent"/>
+
+      <md-dialog-actions>
+        <md-button class="" v-if="spawnedLogin"
+                   v-clipboard:copy="spawnedLogin"
+                   v-clipboard:success="$store.commit.bind($store, 'error', 'Copied')"
+        >Copy</md-button>
+        <md-button class="md-primary md-raised" @click="dialogShow=false">Ok</md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
   </section>
 </template>
 
@@ -59,6 +69,7 @@ export default {
       dialogShow: false,
       dialogTitle: '',
       dialogContent: '',
+      spawnedLogin: '',
       loading: 0,
     };
   },
@@ -122,7 +133,8 @@ export default {
 
         return this.requestLogin(spawnUser.user.displayName, spawnUser.hash).then(({ token }) => {
           localStorage.token = token;
-          this.showMessage(`请保管好您的登录暗号<br>${spawnUser.user.displayName}:${spawnUser.hash}`, '注册成功');
+          this.spawnedLogin = `${spawnUser.user.displayName}:${spawnUser.hash}`;
+          this.showMessage(`请保管好您的登录暗号<br>${this.spawnedLogin}`, '注册成功');
         });
       }).catch(this.handleError.bind(this));
     },

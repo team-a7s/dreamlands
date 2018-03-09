@@ -36,13 +36,11 @@ use Lit\Griffin\ObjectRepositoryInterface;
 use Lit\Griffin\SourceBuilder;
 use Lit\Nexus\Cache\CacheKeyValue;
 use Lit\Nexus\Derived\PrefixKeyValue;
-use Lit\Nexus\Derived\SlicedValue;
 use Lit\Nexus\Interfaces\KeyValueInterface;
 use Lit\Nexus\Traits\KeyValueTrait;
 use Lit\Router\FastRoute\CachedDispatcher;
 use Lit\Router\FastRoute\FastRouteRouter;
 use Predis\Client as RedisClient;
-use FastRoute;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -95,7 +93,7 @@ class KadathContainer extends BoltContainer
                 NodeIdentify::class => C::provideParameter([
                     Hashids::class => C::singleton(Hashids::class, [
                         hash_hmac('sha1', $_ENV[Kadath::ENV_SALT], 'node_id'),//salt
-                        8,//minLength
+                        6,//minLength
                     ])
                 ]),
                 IdGeneratorInterface::class => C::singleton(IdGenerator::class),

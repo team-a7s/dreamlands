@@ -1,6 +1,10 @@
 <template>
   <section class="post-content">
-    <div class="content md-body-1" ref="content"></div>
+    <div class="content md-body-1">
+      <p v-for="(line, idx) in lines" :key="idx">
+        {{line}}
+      </p>
+    </div>
   </section>
 </template>
 
@@ -8,25 +12,19 @@
 export default {
   name: 'u-postcontent',
   props: ['content', 'content-type'],
-  mounted() {
-    const text = this.$props.content;
-    this.renderPlain(text);
-  },
-  methods: {
-    renderPlain(text) {
-      this.$refs.content.innerHTML = '';
-      text.split('\n').forEach((line) => {
-        const p = document.createElement('p');
-        p.innerText = line;
-        this.$refs.content.appendChild(p);
-      });
+  computed: {
+    lines() {
+      return this.$props.content.split('\n');
     },
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .post-content {
     word-wrap: break-word;
+    p {
+      margin: .25em 0;
+    }
   }
 </style>

@@ -30,6 +30,9 @@
           <span>{{thread.title}}</span>
           <p>{{thread.content}}</p>
         </div>
+        <div class="md-list-action" v-if="thread.childCount > 0">
+          +{{thread.childCount}}
+        </div>
       </md-list-item>
     </md-list>
 
@@ -80,6 +83,7 @@ export default {
               threads: {
                 nodes: [...previousResult.threadsQuery.threads.nodes, ...threads.nodes],
                 pageInfo: threads.pageInfo,
+                __typename: 'PostConnection',
               },
             }),
           });

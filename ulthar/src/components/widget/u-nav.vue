@@ -33,6 +33,8 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  >>> .router-link-active {
+    cursor: default;
+  }
 </style>

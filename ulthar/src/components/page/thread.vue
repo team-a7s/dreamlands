@@ -19,8 +19,18 @@
           ></u-postcontent>
         </md-card-content>
         <script type="foo" v-if="board">{{board.name}}</script>
+        <md-card-actions>
+          <md-button class="md-primary" @click="showPostBox=!showPostBox">回复</md-button>
+        </md-card-actions>
       </md-card>
     </article>
+    <u-postbox
+      :parent-id="threadQuery.id" post-type="POST"
+      v-if="showPostBox && threadQuery" @posted="onPosted()"
+    >
+      <span class="label">{{threadQuery.title}}</span>
+    </u-postbox>
+
 
     <md-card class="posts" v-if="postsQuery">
       <article class="post" v-for="(post, index) in postsQuery.posts.nodes" :key="post.id">
@@ -33,10 +43,10 @@
           <div class="md-title">{{post.author.displayName}}</div>
           <div class="md-subhead">{{post.created | datetime}}</div>
         </md-card-header>
-        <md-card-header v-if="post.title">
-          <div class="md-title">{{post.title}}</div>
-        </md-card-header>
         <md-card-content>
+          <template v-if="post.title">
+            <div class="md-body-2">{{post.title}}</div>
+          </template>
           <u-postcontent
             :content-type="post.contentType" :content="post.content"
           ></u-postcontent>
@@ -44,13 +54,13 @@
       </article>
     </md-card>
 
-    <u-postbox
-      :parent-id="threadQuery.id" post-type="POST"
-      v-if="showPostBox && threadQuery" @posted="onPosted()"
+    <div class="md-layout md-alignment-center"
+         v-if="postsQuery && postsQuery.posts.pageInfo.hasNextPage"
     >
-      <span class="label">{{threadQuery.title}}</span>
-    </u-postbox>
-
+      <md-button class="md-icon-button md-raised md-primary" @click="fetchMore">
+        <font-awesome-icon :icon="['fas', 'ellipsis-h']"></font-awesome-icon>
+      </md-button>
+    </div>
   </section>
 </template>
 
@@ -64,7 +74,7 @@ export default {
   data() {
     return {
       boardId: null,
-      showPostBox: true,
+      showPostBox: false,
     };
   },
   computed: {
@@ -80,6 +90,33 @@ export default {
       this.showPostBox = false;
       this.$apollo.queries.postsQuery.refetch();
     },
+    fetchMore() {
+      this.$apollo.queries.postsQuery.fetchMore({
+        variables: {
+          after: this.postsQuery.posts.pageInfo.endCursor,
+        },
+        updateQuery(previousResult, { fetchMoreResult }) {
+          const posts = fetchMoreResult.postsQuery.posts;
+          posts.nodes = posts.nodes.filter(post =>
+            previousResult.postsQuery.posts.nodes.every(post2 => post2.id !== post.id),
+          );
+          if (!posts.nodes.length) {
+            return previousResult;
+          }
+
+          return Object.assign({}, previousResult, {
+            postsQuery: Object.assign({}, previousResult.postsQuery, {
+              posts: {
+                nodes: [...previousResult.postsQuery.posts.nodes, ...posts.nodes],
+                pageInfo: posts.pageInfo,
+                __typename: 'PostConnection',
+              },
+            }),
+          });
+        },
+      });
+    },
+
   },
   apollo: {
     boardQuery: {
@@ -106,7 +143,7 @@ export default {
       id
       ... on Post {
         posts(page: {
-          first: 13
+          first: 3
           after: $after
         }) {
           nodes{
@@ -130,6 +167,7 @@ export default {
       variables() {
         return {
           postId: this.id,
+          after: null,
         };
       },
     },
@@ -148,8 +186,8 @@ export default {
 };
 </script>
 
-<style scoped>
-  .thread-main {
+<style scoped lang="scss">
+  .thread-main, .posts {
     margin-bottom: 1em;
   }
 </style>

@@ -65,7 +65,7 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
         if (empty($cursor)) {
             throw KadathException::badRequest('bad cursor');
         }
-        $method = ($paginationArgument->isForward() ^ self::IS_ASC) ? 'lt' : 'gt';
+        $method = ($paginationArgument->isForward() ^ self::IS_ASC) ? 'gt' : 'lt';
 
         return [
             new class($cursor, $method) implements SqlCallback

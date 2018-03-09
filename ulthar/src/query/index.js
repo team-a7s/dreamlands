@@ -18,6 +18,7 @@ export const postFragment = gql`fragment postFragment on Post {
   content
   contentType
   via
+  childCount
   parentId
   type
   created

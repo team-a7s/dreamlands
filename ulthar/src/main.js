@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import { sync } from 'vuex-router-sync';
-import VueMaterial from 'vue-material';
 
 import App from '@/App';
 import components from '@/components';
 import * as filters from '@/filters';
 import router from '@/router';
 import store from '@/store';
+import plugins from '@/plugins';
 import apolloMixin from '@/apollo';
 import fontawesome from '@fortawesome/fontawesome';
 import brands from '@fortawesome/fontawesome-free-brands';
@@ -28,7 +28,7 @@ router.afterEach(() => {
 });
 
 // Object.keys(components).forEach(key => Vue.component(key, components[key]));
-Vue.use(VueMaterial);
+plugins.forEach(p => Vue.use(p));
 Object.assign(Vue.options.components, components);
 Object.assign(Vue.options.filters, filters);
 
