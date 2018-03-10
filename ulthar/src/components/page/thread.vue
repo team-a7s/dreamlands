@@ -3,12 +3,31 @@
     <article class="thread-main" v-if="threadQuery">
       <md-card>
         <md-card-header>
-          <md-avatar>
-            <img :src="threadQuery.author.avatar" alt="Avatar">
-          </md-avatar>
+          <md-card-header-text>
+            <md-avatar>
+              <img :src="threadQuery.author.avatar" alt="Avatar">
+            </md-avatar>
 
-          <div class="md-title">{{threadQuery.author.displayName}}</div>
-          <div class="md-subhead">{{threadQuery.created | datetime}}</div>
+            <div class="md-title">{{threadQuery.author.displayName}}</div>
+            <div class="md-subhead">{{threadQuery.created | datetime}}</div>
+          </md-card-header-text>
+          <md-menu md-direction="bottom-end">
+            <md-button class="md-icon-button" md-menu-trigger>
+              <md-icon>more_vert</md-icon>
+            </md-button>
+
+            <md-menu-content>
+              <md-menu-item>
+                <span>新回复在前&nbsp;</span>
+                <md-switch v-model="reversed" class="md-primary"></md-switch>
+              </md-menu-item>
+
+              <md-menu-item @click="reply(threadQuery)">
+                <span>{{threadQuery.id}}&nbsp;</span>
+                <md-icon>reply</md-icon>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
         </md-card-header>
         <md-card-header>
           <div class="md-title">{{threadQuery.title}}</div>
@@ -27,6 +46,7 @@
     <u-postbox
       :parent-id="threadQuery.id" post-type="POST"
       v-if="showPostBox && threadQuery" @posted="onPosted()"
+      ref="postbox"
     >
       <span class="label">{{threadQuery.title}}</span>
     </u-postbox>
@@ -36,12 +56,14 @@
       <article class="post" v-for="(post, index) in postsQuery.posts.nodes" :key="post.id">
         <md-divider v-if="index > 0"></md-divider>
         <md-card-header>
-          <md-avatar>
-            <img :src="post.author.avatar" alt="Avatar">
-          </md-avatar>
+          <md-card-header-text>
+            <md-avatar>
+              <img :src="post.author.avatar" alt="Avatar">
+            </md-avatar>
 
-          <div class="md-title">{{post.author.displayName}}</div>
-          <div class="md-subhead">{{post.created | datetime}}</div>
+            <div class="md-title">{{post.author.displayName}}</div>
+            <div class="md-subhead">{{post.created | datetime}}</div>
+          </md-card-header-text>
         </md-card-header>
         <md-card-content>
           <template v-if="post.title">
@@ -75,7 +97,13 @@ export default {
     return {
       boardId: null,
       showPostBox: false,
+      reversed: false,
     };
+  },
+  watch: {
+    reversed() {
+      this.$nextTick(_ => this.$apollo.queries.postsQuery.refetch());
+    },
   },
   computed: {
     board() {
@@ -116,6 +144,15 @@ export default {
         },
       });
     },
+    reply(target) {
+      const quote = `>>> ${target.id}`;
+      if (this.showPostBox) {
+        this.$refs.postbox.append(quote);
+      } else {
+        this.$copyText(quote);
+        this.$store.commit('error', 'Copied');
+      }
+    },
 
   },
   apollo: {
@@ -138,14 +175,14 @@ export default {
     },
     postsQuery: {
       query: gql`
- query($postId:ID!, $after:String) {
+ query($postId:ID!, $after:String, $reversed:Boolean) {
     postsQuery: node(id:$postId) {
       id
       ... on Post {
         posts(page: {
           first: 3
           after: $after
-        }) {
+        }, reversed:$reversed) {
           nodes{
             ...postFragment
             author {
@@ -168,6 +205,7 @@ export default {
         return {
           postId: this.id,
           after: null,
+          reversed: this.reversed,
         };
       },
     },

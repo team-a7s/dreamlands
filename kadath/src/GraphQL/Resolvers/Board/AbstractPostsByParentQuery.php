@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kadath\GraphQL\Resolvers\Board;
 
+use Kadath\Adapters\KadathLogger;
 use Kadath\Database\AbstractRecord;
 use Kadath\Database\AbstractRepository;
 use Kadath\Database\Records\BoardRecord;
@@ -65,7 +66,7 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
         if (empty($cursor)) {
             throw KadathException::badRequest('bad cursor');
         }
-        $method = ($paginationArgument->isForward() ^ self::IS_ASC) ? 'gt' : 'lt';
+        $method = ($paginationArgument->isForward() ^ $this->isAsc()) ? 'lt' : 'gt';
 
         return [
             new class($cursor, $method) implements SqlCallback
@@ -92,11 +93,20 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
 
     protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
     {
-        $order = ($paginationArgument->isForward() ^ static::IS_ASC) ? -1 : 1;
+        KadathLogger::instance()->info('args', [
+            $paginationArgument->isForward(),
+            $this->isAsc(),
+        ]);
+        $order = ($paginationArgument->isForward() ^ $this->isAsc()) ? -1 : 1;
 
         return [
             'touched_at' => $order,
             'id' => $order,
         ];
+    }
+
+    protected function isAsc()
+    {
+        return static::IS_ASC;
     }
 }

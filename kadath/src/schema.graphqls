@@ -55,7 +55,7 @@ type Post implements Node {
     childCount: Int!
     parentId: String!
     parentNode: Node!
-    posts(page:PaginationParam!): PostConnection!
+    posts(page:PaginationParam!, reversed:Boolean): PostConnection!
 }
 
 type UserSpawnResult {

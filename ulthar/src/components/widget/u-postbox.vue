@@ -16,7 +16,7 @@
           <label>内容</label>
           <md-textarea
             name="content" placeholder="内容" md-counter="300"
-            v-model="postContent"
+            v-model="postContent" ref="content"
           ></md-textarea>
         </md-field>
       </md-card-content>
@@ -81,6 +81,14 @@ export default {
         this.$store.commit('error', err);
         this.loading = false;
       });
+    },
+    append(content) {
+      if (!this.postContent.endsWith('\n')) {
+        this.postContent += '\n';
+      }
+
+      this.postContent += `${content}\n`;
+      this.$refs.content.$el.focus();
     },
   },
 };
