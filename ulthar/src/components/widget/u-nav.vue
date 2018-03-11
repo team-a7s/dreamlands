@@ -19,6 +19,11 @@ import gql from 'graphql-tag';
 
 export default {
   name: 'u-nav',
+  data() {
+    return {
+      boards: null,
+    };
+  },
   apollo: {
     boards: gql`query {
     boards(page:{first: 5}) {
@@ -34,7 +39,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  >>> .router-link-active {
+  > > > .router-link-active {
     cursor: default;
   }
 </style>

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Kadath\Middlewares;
 
+use GraphQL\Error\FormattedError;
+use Interop\Http\Factory\ResponseFactoryInterface;
 use Kadath\Adapters\IncrWithSupremumTtl;
 use Kadath\Configuration\KarmaPolicy;
 use Kadath\Exceptions\KarmaException;
+use Lit\Air\Injection\SetterInjector;
 use Lit\Middleware\IpAddress\IpAddress;
 use Lit\Nimo\AbstractMiddleware;
 use Predis\Client;
@@ -15,6 +18,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
 {
+    const SETTER_INJECTOR = SetterInjector::class;
+
     const KARMA_PREFIX = 'km:';
 
     const KARMA_TYPE_ANONYMOUS = 1;
@@ -33,12 +38,26 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
      * @var SessionMiddleware
      */
     protected $session;
+    protected $remainKarma;
 
     protected $type = self::KARMA_TYPE_ANONYMOUS;
     /**
      * @var Client
      */
     private $redisClient;
+
+
+    /**
+     * @var ResponseFactoryInterface
+     */
+    protected $responseFactory;
+
+    public function injectResponseFactory(ResponseFactoryInterface $responseFactory)
+    {
+        $this->responseFactory = $responseFactory;
+        return $this;
+    }
+
 
     public function __construct(Client $redisClient)
     {
@@ -60,7 +79,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         return $pipeline->execute()[1];
     }
 
-    public function commit(int $karma)
+    public function commit(int $karma): int
     {
         assert($karma > 0);
         $cmd = $this->redisClient->createCommand(IncrWithSupremumTtl::ID, [
@@ -70,12 +89,33 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
             self::KARMA_TTL,
         ]);
 
-        $result = $this->redisClient->executeCommand($cmd);
+        $result = (int)$this->redisClient->executeCommand($cmd);
         if ($result < 0) {
             throw KarmaException::confess();
         }
 
+        $this->remainKarma = $result;
         return $result;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRemainKarma()
+    {
+        if (!$this->remainKarma) {
+            $key = $this->makeKarmaKey();
+            $karma = intval($this->redisClient->get($key));
+            $this->remainKarma = self::KARMA_CAPABILITY[$this->type] - $karma;
+        }
+
+        return $this->remainKarma;
+    }
+
+    protected function getTtl()
+    {
+        $key = $this->makeKarmaKey();
+        return $this->redisClient->ttl($key);
     }
 
     protected function main(): ResponseInterface
@@ -90,8 +130,25 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
             }
         }
 
-        $this->commit(self::KARMA_COST_GENERAL_REQUEST);
-        return $this->delegate();
+        try {
+            $this->commit(self::KARMA_COST_GENERAL_REQUEST);
+            $response = $this->delegate();
+            return $response
+                ->withHeader('X-Karma', sprintf('%d/%d', $this->getRemainKarma(), self::KARMA_CAPABILITY[$this->type]))
+                ->withHeader('X-Karma-Ttl', $this->getTtl());
+        } catch (KarmaException $e) {
+            $forbidden = $this->responseFactory->createResponse(403);
+            $forbidden->getBody()->write(json_encode([
+                'data' => [],
+                'errors' => [
+                    FormattedError::createFromException($e)
+                ],
+            ]));
+
+            return $forbidden
+                ->withHeader('X-Karma', sprintf('%d/%d', $this->getRemainKarma(), self::KARMA_CAPABILITY[$this->type]))
+                ->withHeader('X-Karma-Ttl', $this->getTtl());
+        }
     }
 
     protected function makeKarmaKey()

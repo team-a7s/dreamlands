@@ -98,11 +98,14 @@ export default {
       boardId: null,
       showPostBox: false,
       reversed: false,
+      boardQuery: null,
+      threadQuery: null,
+      postsQuery: null,
     };
   },
   watch: {
     reversed() {
-      this.$nextTick(_ => this.$apollo.queries.postsQuery.refetch());
+      this.$nextTick(() => this.$apollo.queries.postsQuery.refetch());
     },
   },
   computed: {

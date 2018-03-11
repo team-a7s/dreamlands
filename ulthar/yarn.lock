@@ -7828,8 +7828,8 @@ void-elements@^2.0.0:
   resolved "http://registry.npm.taobao.org/void-elements/download/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
 
 vue-apollo@^3.0.0-alpha.3:
-  version "3.0.0-alpha.3"
-  resolved "http://registry.npm.taobao.org/vue-apollo/download/vue-apollo-3.0.0-alpha.3.tgz#df334300ac361f01f1dd36129c9e05b7496baf90"
+  version "3.0.0-beta.5"
+  resolved "http://registry.npm.taobao.org/vue-apollo/download/vue-apollo-3.0.0-beta.5.tgz#d0aabd19683e50cd1ab2d24e2827e8fb579ff78e"
   dependencies:
     lodash.debounce "^4.0.8"
     lodash.omit "^4.5.0"

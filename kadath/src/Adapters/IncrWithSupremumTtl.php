@@ -30,7 +30,7 @@ else
     redis.call('INCRBY', KEYS[1], KEYS[2])
 end
 
-return karma
+return tonumber(KEYS[3]) - karma
 LUA;
 
     public function getScript()

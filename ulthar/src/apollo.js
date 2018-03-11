@@ -42,11 +42,24 @@ const apolloClient = new ApolloClient({
 
 const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
+  errorHandler(e) {
+    if (e.networkError) {
+      this.$store.commit('error',
+        `${e.networkError.statusCode}: ${e.networkError.message}`);
+      return;
+    }
+    if (!e.graphQLErrors || !e.graphQLErrors[0]) {
+      this.$store.commit('error', `Unknown Error: ${e.message || e}`);
+      return;
+    }
+    
+    console.info(e.graphQLErrors);
+  },
 });
 
 const apollo = {};
 
 export default {
-  apolloProvider,
+  provide: apolloProvider.provide(),
   apollo,
 };
