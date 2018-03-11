@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kadath\Pagination;
+namespace Kadath\GraphQL\Pagination;
 
 use GraphQL\Error\ClientAware;
 use Kadath\Exceptions\KadathException;

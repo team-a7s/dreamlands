@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kadath\GraphQL\Resolvers\Board;
 
-use Kadath\Adapters\KadathLogger;
+use Kadath\Adapters\KLogger;
 use Kadath\Database\AbstractRecord;
 use Kadath\Database\AbstractRepository;
 use Kadath\Database\Records\BoardRecord;
@@ -14,7 +14,7 @@ use Kadath\Database\SqlBuilder;
 use Kadath\Database\SqlCallback;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\AbstractConnectionQuery;
-use Kadath\Pagination\PaginationArgument;
+use Kadath\GraphQL\Pagination\PaginationArgument;
 use Lit\Nimo\Tests\RememberConstructorParamTrait;
 
 abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
@@ -93,7 +93,7 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
 
     protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
     {
-        KadathLogger::instance()->info('args', [
+        KLogger::instance()->info('args', [
             $paginationArgument->isForward(),
             $this->isAsc(),
         ]);

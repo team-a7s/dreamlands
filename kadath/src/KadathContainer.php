@@ -9,7 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Hashids\Hashids;
 use Kadath\Action\NotFoundAction;
-use Kadath\Adapters\KadathLogger;
+use Kadath\Adapters\KLogger;
 use Kadath\Adapters\RedisKeyValue;
 use Kadath\Adapters\RouteDefinition;
 use Kadath\Adapters\RouterStubResolver;
@@ -87,7 +87,7 @@ class KadathContainer extends BoltContainer
                         'url' => $_ENV[Kadath::ENV_DATABASE_DSN],
                     ]);
 
-                    $connection->getConfiguration()->setSQLLogger(KadathLogger::instance());
+                    $connection->getConfiguration()->setSQLLogger(KLogger::instance());
                     return $connection;
                 },
                 NodeIdentify::class => C::provideParameter([
@@ -108,7 +108,7 @@ class KadathContainer extends BoltContainer
                     return new CacheKeyValue($pool);
                 },
                 LoggerInterface::class => function () {
-                    return KadathLogger::instance();
+                    return KLogger::instance();
                 },
                 AbstractRepository::class . '::' => [ //inject to all child class
                     'cache' => $this->redisCache(3600, 'db:'),

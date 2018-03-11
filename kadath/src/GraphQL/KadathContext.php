@@ -8,6 +8,7 @@ use Hashids\Hashids;
 use Kadath\Database\AbstractRecord;
 use Kadath\Database\AbstractRepository;
 use Kadath\Exceptions\KadathException;
+use Kadath\Middlewares\KarmaMiddleware;
 use Kadath\Middlewares\SessionMiddleware;
 use Lit\Griffin\Context;
 use Lit\Middleware\IpAddress\IpAddress;
@@ -58,5 +59,10 @@ class KadathContext extends Context
         /** @var AbstractRepository $repo */
         $repo = $this->factory->getOrProduce($repoClass);
         return $repo->find($id);
+    }
+
+    public function karma(): KarmaMiddleware
+    {
+        return KarmaMiddleware::fromRequest($this->request);
     }
 }

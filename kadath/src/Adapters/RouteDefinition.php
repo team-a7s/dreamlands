@@ -15,7 +15,7 @@ class RouteDefinition extends FastRouteDefinition
 {
     public function __invoke(RouteCollector $routeCollector): void
     {
-        $routeCollector->get('/avatar/{nodeId}', [AvatarAction::class]);
-        $routeCollector->addRoute(['GET', 'POST'], '/graphql', [GraphQLAction::class]);
+        $routeCollector->get('/avatar/{nodeId}', AvatarAction::class);
+        $routeCollector->addRoute(['GET', 'POST'], '/graphql', GraphQLAction::class);
     }
 }

@@ -7,7 +7,7 @@ namespace Kadath\GraphQL;
 use Kadath\Database\AbstractRecord;
 use Kadath\Database\AbstractRepository;
 use Kadath\Exceptions\KadathException;
-use Kadath\Pagination\PaginationArgument;
+use Kadath\GraphQL\Pagination\PaginationArgument;
 
 abstract class AbstractConnectionQuery extends AbstractKadathResolver implements \ArrayAccess
 {

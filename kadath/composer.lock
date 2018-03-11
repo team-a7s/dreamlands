@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7930b6d84e76ff73480ef63b7c82e96a",
+    "content-hash": "e4e7d4af2cb3a395b30a54cb3aaa196c",
     "packages": [
         {
             "name": "cache/adapter-common",
@@ -1240,6 +1240,152 @@
             ],
             "description": "All LitPHP Goodies",
             "time": "2018-02-12T18:18:20+00:00"
+        },
+        {
+            "name": "micheh/psr7-cache",
+            "version": "0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/micheh/psr7-cache.git",
+                "reference": "b99e8ae6d024d8c70945084b5b979a62cfd05df4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/micheh/psr7-cache/b99e8ae6d024d8c70945084b5b979a62cfd05df4.zip",
+                "reference": "b99e8ae6d024d8c70945084b5b979a62cfd05df4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "psr/http-message": "~1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0||~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Micheh\\Cache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Cache and conditional request helpers for PSR-7 HTTP Messages",
+            "keywords": [
+                "cache",
+                "conditional",
+                "http",
+                "http-message",
+                "if-match",
+                "if-modified-since",
+                "if-none-match",
+                "if-unmodified-since",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2016-04-15T16:31:14+00:00"
+        },
+        {
+            "name": "middlewares/cache",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/middlewares/cache.git",
+                "reference": "095c481c8427489c7afe8b9c38efc4290baf0f62"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/middlewares/cache/095c481c8427489c7afe8b9c38efc4290baf0f62.zip",
+                "reference": "095c481c8427489c7afe8b9c38efc4290baf0f62",
+                "shasum": ""
+            },
+            "require": {
+                "micheh/psr7-cache": "^0.5.0",
+                "middlewares/utils": "^1.0",
+                "php": "^7.0",
+                "psr/cache": "^1.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "matthiasmullie/scrapbook": "^1.3",
+                "phpunit/phpunit": "^6.0",
+                "squizlabs/php_codesniffer": "^3.0",
+                "zendframework/zend-diactoros": "^1.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Middlewares\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Middleware with various cache utilities",
+            "homepage": "https://github.com/middlewares/cache",
+            "keywords": [
+                "http",
+                "middleware",
+                "psr-15",
+                "psr-7"
+            ],
+            "time": "2018-01-25T21:43:41+00:00"
+        },
+        {
+            "name": "middlewares/utils",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/middlewares/utils.git",
+                "reference": "d36b0b8bee8548c45b34e64891b084742a640cf0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://files.phpcomposer.com/files/middlewares/utils/d36b0b8bee8548c45b34e64891b084742a640cf0.zip",
+                "reference": "d36b0b8bee8548c45b34e64891b084742a640cf0",
+                "shasum": ""
+            },
+            "require": {
+                "http-interop/http-factory": "^0.3",
+                "php": "^7.0",
+                "psr/container": "^1.0",
+                "psr/http-message": "^1.0",
+                "psr/http-server-middleware": "^1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "guzzlehttp/psr7": "^1.3",
+                "phpunit/phpunit": "^6.0",
+                "slim/slim": "^3.5",
+                "squizlabs/php_codesniffer": "^3.0",
+                "zendframework/zend-diactoros": "^1.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Middlewares\\Utils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Common utils to create PSR-15 middleware packages",
+            "homepage": "https://github.com/middlewares/utils",
+            "keywords": [
+                "PSR-11",
+                "http",
+                "middleware",
+                "psr-15",
+                "psr-7"
+            ],
+            "time": "2018-01-24T09:54:56+00:00"
         },
         {
             "name": "monolog/monolog",

@@ -9,7 +9,7 @@ namespace Kadath\Adapters;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Monolog\Logger;
 
-class KadathLogger extends Logger implements SQLLogger
+class KLogger extends Logger implements SQLLogger
 {
     private static $instance;
     private $queryStart;

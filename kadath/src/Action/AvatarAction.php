@@ -14,6 +14,8 @@ use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\NodeIdentify;
 use Lit\Air\Injection\SetterInjector;
 use Lit\Bolt\BoltAction;
+use Lit\Nimo\MiddlewarePipe;
+use Middlewares\Expires;
 use Psr\Http\Message\ResponseInterface;
 
 class AvatarAction extends BoltAction
@@ -66,5 +68,12 @@ class AvatarAction extends BoltAction
 
         return $response
             ->withHeader('Content-Type', 'image/png');
+    }
+
+    public static function routeHandler(self $action)
+    {
+        return $action->includeMiddleware((new MiddlewarePipe())
+            ->append((new Expires())->defaultExpires('+30 day'))
+        );
     }
 }

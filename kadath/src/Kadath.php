@@ -6,6 +6,7 @@ namespace Kadath;
 
 use Cache\Adapter\Apcu\ApcuCachePool;
 use Dotenv\Dotenv;
+use Kadath\Middlewares\KarmaMiddleware;
 use Kadath\Middlewares\SessionMiddleware;
 use Kadath\Middlewares\TransactionMiddleware;
 use Lit\Air\Factory;
@@ -41,7 +42,8 @@ class Kadath
         $app->getMiddlewarePipe()
             ->append($factory->getOrProduce(TransactionMiddleware::class))
             ->append($factory->getOrProduce(IpAddress::class))
-            ->append($factory->getOrProduce(SessionMiddleware::class));
+            ->append($factory->getOrProduce(SessionMiddleware::class))
+            ->append($factory->getOrProduce(KarmaMiddleware::class));
 
         return $app;
     }

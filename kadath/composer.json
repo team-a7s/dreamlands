@@ -28,6 +28,7 @@
         "yzalis/identicon": "^1.2",
         "litphp/litphp": "^0.8.0@dev",
         "symfony/finder": "^4.0",
-        "monolog/monolog": "^1.23"
+        "monolog/monolog": "^1.23",
+        "middlewares/cache": "^1.0"
     }
 }

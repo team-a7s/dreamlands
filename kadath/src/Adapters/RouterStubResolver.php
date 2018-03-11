@@ -5,28 +5,18 @@ declare(strict_types=1);
 namespace Kadath\Adapters;
 
 use Lit\Air\Factory;
-use Lit\Core\Interfaces\RouterStubResolverInterface;
+use Lit\Bolt\Router\BoltStubResolver;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class RouterStubResolver implements RouterStubResolverInterface
+class RouterStubResolver extends BoltStubResolver
 {
-    /**
-     * @var Factory
-     */
-    protected $factory;
-
-    public function __construct(Factory $factory)
-    {
-        $this->factory = $factory;
-    }
-
     public function resolve($stub): RequestHandlerInterface
     {
-        if ($stub instanceof RequestHandlerInterface) {
-            return $stub;
+        if (is_callable([$stub, 'routeHandler'])) {
+            $factory = Factory::of($this->container);
+            return $factory->invoke([$stub, 'routeHandler']);
         }
 
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $this->factory->instantiate(...$stub);
+        return parent::resolve($stub);
     }
 }

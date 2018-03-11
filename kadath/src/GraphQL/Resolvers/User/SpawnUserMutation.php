@@ -6,6 +6,7 @@ namespace Kadath\GraphQL\Resolvers\User;
 
 use Kadath\Database\Repositories\UserRepo;
 use Kadath\GraphQL\AbstractKadathResolver;
+use Kadath\Middlewares\KarmaMiddleware;
 
 /**
  * Class SpawnUser
@@ -13,7 +14,6 @@ use Kadath\GraphQL\AbstractKadathResolver;
  */
 class SpawnUserMutation extends AbstractKadathResolver
 {
-
     /**
      * @var UserRepo
      */
@@ -28,6 +28,8 @@ class SpawnUserMutation extends AbstractKadathResolver
     public function resolve()
     {
         assert(isset($this->args['nickname']) && is_string($this->args['nickname']));
+        $this->context->karma()->commit(KarmaMiddleware::KARMA_COST_SPAWN);
+
         $nickname = $this->args['nickname'];
         $ip = $this->context->ipAddress()->getIpAddress();
         $user = $this->userRepo->spawn($nickname, $ip);
