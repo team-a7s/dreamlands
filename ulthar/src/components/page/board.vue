@@ -56,6 +56,8 @@ export default {
   data() {
     return {
       showPostBox: false,
+      boardQuery: null,
+      threadsQuery: null,
     };
   },
   computed: {

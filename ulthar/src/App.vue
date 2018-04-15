@@ -31,11 +31,29 @@
       </md-app-content>
     </md-app>
 
+    <md-dialog
+      :md-active.sync="modalActive"
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+      v-if="$store.state.modal"
+    >
+      <template v-if="$store.state.modal.type==='karma'">
+        <md-dialog-title>Pause!</md-dialog-title>
+        <vue-recaptcha
+          @verify="verifyCaptcha"
+          :sitekey="$root.$options.config.RECAPTCHA_KEY"
+        ></vue-recaptcha>
+      </template>
+      <template v-else>
+        <md-dialog-title>"{{$store.state.modal.type}}"</md-dialog-title>
+      </template>
+    </md-dialog>
   </div>
 </template>
 
 <script>
 import throttle from 'lodash.throttle';
+import gql from 'graphql-tag';
 
 export default {
   name: 'App',
@@ -45,6 +63,20 @@ export default {
       showSnackbar: false,
       message: '',
     };
+  },
+  computed: {
+    modalActive: {
+      get() {
+        return !!this.$store.state.modal;
+      },
+      set(v) {
+        if (v) {
+          throw new Error('..');
+        } else {
+          this.$store.commit('closeModal');
+        }
+      },
+    },
   },
   methods: {
     handleError: throttle(function handleError() {
@@ -63,6 +95,18 @@ export default {
       this.message = msg;
       this.showSnackbar = true;
     }, 5000),
+    verifyCaptcha(response) {
+      this.$apollo.mutate({
+        mutation: gql`
+        mutation($response: String!) {
+          challengeCaptcha(response:$response)
+        }
+`,
+        variables: {
+          response,
+        },
+      }).then(o => console.log(o));
+    },
   },
   mounted() {
     this._unbind = this.$store.subscribe((mutation, state) => {

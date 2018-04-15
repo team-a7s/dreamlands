@@ -52,8 +52,14 @@ const apolloProvider = new VueApollo({
       this.$store.commit('error', `Unknown Error: ${e.message || e}`);
       return;
     }
-    
-    console.info(e.graphQLErrors);
+
+    switch (e.graphQLErrors[0].category) {
+      case 'karma':
+        this.$store.commit('refreshKarma', e.graphQLErrors[0].category);
+        break;
+      default:
+        console.error(e.graphQLErrors, this);
+    }
   },
 });
 

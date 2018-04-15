@@ -15,13 +15,14 @@ type Mutation {
     spawnUser(nickname: String!): UserSpawnResult!
     createAuthUrl: String!
     checkAuthCode(state:String!, code:String!): Session
+    challengeCaptcha(response:String!): Int!
 
     post(
-    type:PostType!
-    parentId:String!
-    content:String!
-    title:String
-): Post!
+        type:PostType!
+        parentId:String!
+        content:String!
+        title:String
+    ): Post!
 }
 
 

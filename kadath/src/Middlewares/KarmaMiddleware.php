@@ -81,7 +81,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
 
     public function commit(int $karma): int
     {
-        assert($karma > 0);
+        assert($karma >= 0);
         $cmd = $this->redisClient->createCommand(IncrWithSupremumTtl::ID, [
             $this->makeKarmaKey(),
             $karma,
@@ -115,7 +115,8 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
     protected function getTtl()
     {
         $key = $this->makeKarmaKey();
-        return $this->redisClient->ttl($key);
+        $ttl = $this->redisClient->ttl($key);
+        return $ttl > 0 ? $ttl : self::KARMA_TTL;
     }
 
     protected function main(): ResponseInterface
@@ -131,7 +132,6 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         }
 
         try {
-            $this->commit(self::KARMA_COST_GENERAL_REQUEST);
             $response = $this->delegate();
             return $response
                 ->withHeader('X-Karma', sprintf('%d/%d', $this->getRemainKarma(), self::KARMA_CAPABILITY[$this->type]))

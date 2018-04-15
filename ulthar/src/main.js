@@ -4,6 +4,7 @@ import { sync } from 'vuex-router-sync';
 import App from '@/App';
 import components from '@/components';
 import * as filters from '@/filters';
+import config from '@/config';
 import router from '@/router';
 import store from '@/store';
 import plugins from '@/plugins';
@@ -35,6 +36,7 @@ Object.assign(Vue.options.filters, filters);
 fontawesome.library.add(brands, solid);
 window.v = new Vue(Object.assign({
   el: '#app',
+  config,
   router,
   store,
   render: h => h(App),

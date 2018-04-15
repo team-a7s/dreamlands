@@ -29,6 +29,7 @@
         "litphp/litphp": "^0.8.0@dev",
         "symfony/finder": "^4.0",
         "monolog/monolog": "^1.23",
-        "middlewares/cache": "^1.0"
+        "middlewares/cache": "^1.0",
+        "guzzlehttp/guzzle": "^6.3"
     }
 }

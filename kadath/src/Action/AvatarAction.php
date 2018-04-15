@@ -7,18 +7,19 @@ namespace Kadath\Action;
 
 
 use Identicon\Identicon;
+use Kadath\Adapters\KadataAction;
 use Kadath\Database\Records\UserRecord;
 use Kadath\Exceptions\HttpException;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\NodeIdentify;
+use Kadath\Middlewares\KarmaMiddleware;
 use Lit\Air\Injection\SetterInjector;
-use Lit\Bolt\BoltAction;
 use Lit\Nimo\MiddlewarePipe;
 use Middlewares\Expires;
 use Psr\Http\Message\ResponseInterface;
 
-class AvatarAction extends BoltAction
+class AvatarAction extends KadataAction
 {
     const SETTER_INJECTOR = SetterInjector::class;
     /**
@@ -45,6 +46,7 @@ class AvatarAction extends BoltAction
 
     protected function main(): ResponseInterface
     {
+        $this->kadathContext->karma()->commit(KarmaMiddleware::KARMA_COST_GENERAL_REQUEST);
         $nodeId = $this->request->getAttribute('nodeId');
         try {
             [$type, $id] = $this->kadathContext->nodeIdentify->decodeId($nodeId);
@@ -70,10 +72,8 @@ class AvatarAction extends BoltAction
             ->withHeader('Content-Type', 'image/png');
     }
 
-    public static function routeHandler(self $action)
+    public static function prependMiddleware(MiddlewarePipe $pipe)
     {
-        return $action->includeMiddleware((new MiddlewarePipe())
-            ->append((new Expires())->defaultExpires('+30 day'))
-        );
+        $pipe->append((new Expires())->defaultExpires('+30 day'));
     }
 }

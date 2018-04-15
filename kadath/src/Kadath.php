@@ -24,6 +24,7 @@ class Kadath
     const ENV_CONTAINER_CLASS = 'CONTAINER_CLASS';
     const ENV_GITHUB_OAUTH = 'GITHUB_OAUTH';
     const ENV_REDIS_PARAM = 'REDIS_PARAM';
+    const ENV_RECAPTCHA_SECRET = 'RECAPTCHA_SECRET';
 
 
     public static function decorateApp(callable $delegate, BoltContainer $container, ?string $id = null)
@@ -58,6 +59,7 @@ class Kadath
             Kadath::ENV_REDIS_PARAM,
             Kadath::ENV_SALT,
             Kadath::ENV_GITHUB_OAUTH,
+            Kadath::ENV_RECAPTCHA_SECRET,
         ]);
     }
 

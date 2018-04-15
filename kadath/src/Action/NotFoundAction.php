@@ -6,12 +6,10 @@ declare(strict_types=1);
 namespace Kadath\Action;
 
 
-use Kadath\GraphQL\KadathContext;
-use Kadath\GraphQL\NodeIdentify;
-use Lit\Bolt\BoltAction;
+use Kadath\Adapters\KadataAction;
 use Psr\Http\Message\ResponseInterface;
 
-class NotFoundAction extends BoltAction
+class NotFoundAction extends KadataAction
 {
     protected function main(): ResponseInterface
     {

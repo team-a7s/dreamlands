@@ -28,6 +28,7 @@ export function createStore() {
       titleHref: null,
       icon: 'gamepad',
       error: null,
+      modal: null,
     },
 
     mutations: {
@@ -50,6 +51,10 @@ export function createStore() {
         if (!state.error.length) {
           state.error = null;
         }
+      },
+      refreshKarma(state, karmaError) {
+        const type = 'karma';
+        state.modal = { type, karmaError };
       },
     },
   });
