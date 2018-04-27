@@ -15,6 +15,7 @@ use Kadath\GraphQL\Resolvers\User\SpawnUserMutation;
 
 class MutationModel extends AbstractKadathModel
 {
+    const KARMA_COST = 0;
     protected static $resolverMap = [
         'createSession' => CreateSessionMutation::class,
         'spawnUser' => SpawnUserMutation::class,

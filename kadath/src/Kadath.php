@@ -25,6 +25,7 @@ class Kadath
     const ENV_GITHUB_OAUTH = 'GITHUB_OAUTH';
     const ENV_REDIS_PARAM = 'REDIS_PARAM';
     const ENV_RECAPTCHA_SECRET = 'RECAPTCHA_SECRET';
+    const ENV_RECAPTCHA_URL = 'RECAPTCHA_URL';
 
 
     public static function decorateApp(callable $delegate, BoltContainer $container, ?string $id = null)
@@ -64,14 +65,14 @@ class Kadath
     }
 
 
-    public static function makeContainer(): BoltContainer
+    public static function makeContainer(array $config = []): BoltContainer
     {
         if (!isset($_ENV['CONTAINER_CLASS']) || !is_subclass_of($_ENV['CONTAINER_CLASS'], ContainerInterface::class)) {
             echo 'bad CONTAINER_CLASS: ' . $_ENV['CONTAINER_CLASS'], PHP_EOL;
             die(-1);
         }
 
-        return new $_ENV['CONTAINER_CLASS']();
+        return new $_ENV['CONTAINER_CLASS']($config);
     }
 
     public static function run()

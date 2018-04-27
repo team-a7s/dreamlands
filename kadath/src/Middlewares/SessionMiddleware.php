@@ -30,6 +30,7 @@ class SessionMiddleware extends AbstractMiddleware implements ExportableInterfac
     const SESSION_MEMBER = 'member';
     const SESSION_OAUTH_STATE = 'oauth_state';
     const SESSION_ACCESS_TOKEN = 'access_token';
+    const SESSION_TURING = 'turing';
 
     /**
      * @var UserRecord|bool

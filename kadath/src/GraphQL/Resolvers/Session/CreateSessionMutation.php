@@ -9,10 +9,13 @@ use Kadath\Middlewares\SessionMiddleware;
 
 class CreateSessionMutation extends AbstractKadathResolver
 {
+    const KARMA_COST = 0;
     public function resolve()
     {
         $session = SessionMiddleware::fromRequest($this->context->request);
-        $session->createSession();
+        if (!$session->getSid()) {
+            $session->createSession();
+        }
 
         return $this->export($session);
     }

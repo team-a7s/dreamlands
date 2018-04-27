@@ -99,13 +99,23 @@ export default {
       this.$apollo.mutate({
         mutation: gql`
         mutation($response: String!) {
+          createSession {
+            token
+          }
           challengeCaptcha(response:$response)
         }
 `,
         variables: {
           response,
         },
-      }).then(o => console.log(o));
+      })
+        .then((rst) => {
+          if (!rst || !rst.data || !rst.data.createSession) {
+            throw new Error('bad response');
+          }
+          localStorage.setItem('token', rst.data.createSession.token);
+          location.reload();
+        });
     },
   },
   mounted() {

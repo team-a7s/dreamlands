@@ -52,6 +52,8 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
      */
     protected $responseFactory;
 
+    const TURING_EXPIRE = 1800;
+
     public function injectResponseFactory(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
@@ -81,7 +83,11 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
 
     public function commit(int $karma): int
     {
-        assert($karma >= 0);
+        if ($karma === 0) {
+            return $this->getRemainKarma();
+        }
+        assert($karma > 0);
+
         $cmd = $this->redisClient->createCommand(IncrWithSupremumTtl::ID, [
             $this->makeKarmaKey(),
             $karma,
@@ -112,6 +118,13 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         return $this->remainKarma;
     }
 
+    public function activeTuringSession()
+    {
+        $this->session->getSession()->set(SessionMiddleware::SESSION_TURING, time() + self::TURING_EXPIRE);
+        $this->type = self::KARMA_TYPE_TURING_SESSION;
+        $this->remainKarma = null;
+    }
+
     protected function getTtl()
     {
         $key = $this->makeKarmaKey();
@@ -125,8 +138,11 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
 
         $this->ipAddress = IpAddress::fromRequest($this->request);
         $this->session = SessionMiddleware::fromRequest($this->request);
-        if ($this->session) {
-            if ($this->session->getCurrentUser()) {
+        if ($this->session->getSid()) {
+            $storage = $this->session->getSession();
+            if ($storage->exists(SessionMiddleware::SESSION_TURING) && $storage->get(SessionMiddleware::SESSION_TURING) > time()) {
+                $this->type = self::KARMA_TYPE_TURING_SESSION;
+            } elseif ($this->session->getCurrentUser()) {
                 $this->type = self::KARMA_TYPE_USER_SESSION;
             }
         }
@@ -162,8 +178,11 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
             case self::KARMA_TYPE_USER_SESSION:
                 $key = 'u:' . $this->session->getCurrentUser()->id;
                 break;
+            case self::KARMA_TYPE_TURING_SESSION:
+                $key = 's:' . $this->session->getSid();
+                break;
             default:
-                $key = 'ip:-';
+                $key = 'unknown';
                 break;
         }
 
