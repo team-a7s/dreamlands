@@ -39,10 +39,13 @@
     >
       <template v-if="$store.state.modal.type==='karma'">
         <md-dialog-title>Pause!</md-dialog-title>
-        <vue-recaptcha
-          @verify="verifyCaptcha"
-          :sitekey="$root.$options.config.RECAPTCHA_KEY"
-        ></vue-recaptcha>
+        <md-dialog-content>
+          <vue-recaptcha
+            @verify="verifyCaptcha"
+            :sitekey="$root.$options.config.RECAPTCHA_KEY"
+          ></vue-recaptcha>
+
+        </md-dialog-content>
       </template>
       <template v-else>
         <md-dialog-title>"{{$store.state.modal.type}}"</md-dialog-title>

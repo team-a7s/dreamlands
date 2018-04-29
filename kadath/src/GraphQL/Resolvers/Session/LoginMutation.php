@@ -22,7 +22,7 @@ class LoginMutation extends AbstractKadathResolver
         return $this;
     }
 
-    public function resolve()
+    public function doResolve()
     {
         assert(isset($this->args['displayName']) && is_string($this->args['displayName']));
         assert(isset($this->args['hash']) && is_string($this->args['hash']));

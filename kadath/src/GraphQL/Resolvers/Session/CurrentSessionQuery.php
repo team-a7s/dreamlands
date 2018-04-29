@@ -8,7 +8,7 @@ use Kadath\GraphQL\AbstractKadathResolver;
 
 class CurrentSessionQuery extends AbstractKadathResolver
 {
-    public function resolve()
+    public function doResolve()
     {
         $sessionMiddleware = $this->context->session();
 

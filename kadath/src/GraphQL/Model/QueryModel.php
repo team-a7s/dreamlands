@@ -9,6 +9,7 @@ use Kadath\GraphQL\AbstractKadathModel;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\Resolvers\Board\BoardsQuery;
 use Kadath\GraphQL\Resolvers\Session\CurrentSessionQuery;
+use Kadath\Middlewares\KarmaMiddleware;
 
 class QueryModel extends AbstractKadathModel
 {
@@ -34,6 +35,7 @@ class QueryModel extends AbstractKadathModel
 
         [$type, $id] = $context->nodeIdentify->decodeId($args['id']);
 
+        $context->karma()->commit(KarmaMiddleware::KARMA_COST_GENERAL_REQUEST);
         return $context->fetchNode($type, $id);
     }
 }

@@ -98,9 +98,6 @@ export default {
       boardId: null,
       showPostBox: false,
       reversed: false,
-      boardQuery: null,
-      threadQuery: null,
-      postsQuery: null,
     };
   },
   watch: {

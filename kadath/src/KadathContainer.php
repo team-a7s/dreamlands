@@ -79,7 +79,7 @@ class KadathContainer extends BoltContainer
 
                 //Kadath
                 SessionMiddleware::class => C::provideParameter([
-                    'storage' => $this->redisCache(7200, 'session:'),
+                    'storage' => $this->redisCache(86400, 'session:'),
                 ]),
                 RedisClient::class => C::provideParameter(json_decode($_ENV[Kadath::ENV_REDIS_PARAM], true)),
                 Connection::class => function () {

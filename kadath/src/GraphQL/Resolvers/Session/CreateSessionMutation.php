@@ -10,7 +10,7 @@ use Kadath\Middlewares\SessionMiddleware;
 class CreateSessionMutation extends AbstractKadathResolver
 {
     const KARMA_COST = 0;
-    public function resolve()
+    public function doResolve()
     {
         $session = SessionMiddleware::fromRequest($this->context->request);
         if (!$session->getSid()) {

@@ -40,7 +40,7 @@ class CheckAuthCodeMutation extends AbstractKadathResolver
      * @return SessionMiddleware
      * @throws KadathException
      */
-    public function resolve()
+    public function doResolve()
     {
         $sessionMiddleware = $this->context->session();
         $sessionStorage = $this->context->sessionStorage();

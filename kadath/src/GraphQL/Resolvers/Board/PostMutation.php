@@ -29,7 +29,7 @@ class PostMutation extends AbstractKadathResolver
         return $this;
     }
 
-    public function resolve()
+    public function doResolve()
     {
         $this->context->session()->needLogin();
 

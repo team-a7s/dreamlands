@@ -25,7 +25,7 @@ class SpawnUserMutation extends AbstractKadathResolver
         return $this;
     }
 
-    public function resolve()
+    public function doResolve()
     {
         assert(isset($this->args['nickname']) && is_string($this->args['nickname']));
         $this->context->karma()->commit(KarmaMiddleware::KARMA_COST_SPAWN);

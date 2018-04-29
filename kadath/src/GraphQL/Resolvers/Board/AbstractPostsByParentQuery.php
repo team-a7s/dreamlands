@@ -41,7 +41,7 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
         return $this->postRepo;
     }
 
-    protected function resolveWhere(array $args): array
+    protected function parseWhere(array $args): array
     {
         return [
             'type' => static::POST_TYPE,
@@ -91,7 +91,7 @@ abstract class AbstractPostsByParentQuery extends AbstractConnectionQuery
         ];
     }
 
-    protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
+    protected function parseOrder(array $args, PaginationArgument $paginationArgument): array
     {
         KLogger::instance()->info('args', [
             $paginationArgument->isForward(),

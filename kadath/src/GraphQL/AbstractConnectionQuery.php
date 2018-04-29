@@ -8,9 +8,12 @@ use Kadath\Database\AbstractRecord;
 use Kadath\Database\AbstractRepository;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\Pagination\PaginationArgument;
+use Kadath\Middlewares\KarmaMiddleware;
 
 abstract class AbstractConnectionQuery extends AbstractKadathResolver implements \ArrayAccess
 {
+    const KARMA_COST = 0;
+    use ResolveArrayAccessTrait;
     /**
      * @var array
      * @see \Kadath\GraphQL\ResolveArrayAccessTrait
@@ -21,7 +24,6 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
         'pageInfo' => true,
         'totalCount' => true,
     ];
-    use ResolveArrayAccessTrait;
     protected $cursorCount;
     protected $cursorWhere;
     /**
@@ -33,15 +35,31 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
     protected $rows;
     protected $rowCount;
 
-    public function resolve()
+    public function doResolve()
     {
         $pagination = PaginationArgument::fromArray($this->args['page']);
-        $where = $this->resolveWhere($this->args);
-        $order = $this->resolveOrder($this->args, $pagination);
+        $where = $this->parseWhere($this->args);
+        $order = $this->parseOrder($this->args, $pagination);
 
         $this->prepare($this->getRepo(), $where, $order, $pagination);
 
+        $this->context->karma()->commit($this->getKarmaCost());
         return $this;
+    }
+
+    protected function getKarmaCost()
+    {
+        $multiplier = 2;
+        $size = $this->paginationArgument->getSize();
+        if ($size > 25) {
+            $multiplier = 4;
+        } elseif ($size > 100) {
+            $multiplier = 100;
+        } elseif ($size > 500) {
+            throw KadathException::badRequest('bad size');
+        }
+
+        return KarmaMiddleware::KARMA_COST_GENERAL_REQUEST * $multiplier;
     }
 
     protected function resolveTotalCount()
@@ -135,12 +153,12 @@ abstract class AbstractConnectionQuery extends AbstractKadathResolver implements
         return $this->context->hashids->encode($queryHash, $record->{$repo::PK_FIELD});
     }
 
-    protected function resolveWhere(array $args): array
+    protected function parseWhere(array $args): array
     {
         return [];
     }
 
-    protected function resolveOrder(array $args, PaginationArgument $paginationArgument): array
+    protected function parseOrder(array $args, PaginationArgument $paginationArgument): array
     {
         $repo = $this->getRepo();
         $order = $paginationArgument->isForward() ? 1 : -1;

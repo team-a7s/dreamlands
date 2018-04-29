@@ -103,13 +103,19 @@ class SessionMiddleware extends AbstractMiddleware implements ExportableInterfac
 
     public function createSession()
     {
+        $sessionContent = new \stdClass();
+        if ($this->sid) {
+            $sessionContent->{self::SESSION_TURING} = $this->session->get(self::SESSION_TURING);
+            $this->storage->delete($this->sid);
+        }
+
         do {
             $sid = $this->idGenerator->generate();
         } while ($this->storage->exists($sid));
 
-        $this->storage->set($sid, '{}');
         $this->sid = $sid;
-        $this->session = ObjectKeyValue::wrap(new \stdClass());
+        $this->storage->set($sid, json_encode($sessionContent));
+        $this->session = ObjectKeyValue::wrap($sessionContent);
     }
 
     public function sessionExist(string $sid): bool

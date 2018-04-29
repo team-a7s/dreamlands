@@ -9,6 +9,7 @@ use Interop\Http\Factory\ResponseFactoryInterface;
 use Kadath\Adapters\IncrWithSupremumTtl;
 use Kadath\Configuration\KarmaPolicy;
 use Kadath\Exceptions\KarmaException;
+use Kadath\Utility\IdGeneratorInterface;
 use Lit\Air\Injection\SetterInjector;
 use Lit\Middleware\IpAddress\IpAddress;
 use Lit\Nimo\AbstractMiddleware;
@@ -26,9 +27,10 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
     const KARMA_TYPE_TURING_SESSION = 2;
     const KARMA_TYPE_USER_SESSION = 3;
 
-    const KARMA_COST_GENERAL_REQUEST = 10;
-    const KARMA_COST_GENERAL_WRITE = 1000;
+    const KARMA_COST_GENERAL_REQUEST = 5;
+    const KARMA_COST_GENERAL_WRITE = 500;
     const KARMA_COST_SPAWN = 3000;
+    const TURING_EXPIRE = 14400;
     /**
      * @var IpAddress
      */
@@ -39,8 +41,10 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
      */
     protected $session;
     protected $remainKarma;
+    protected $karmaCost = 0;
 
     protected $type = self::KARMA_TYPE_ANONYMOUS;
+    protected $turingKey = null;
     /**
      * @var Client
      */
@@ -51,12 +55,20 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
      * @var ResponseFactoryInterface
      */
     protected $responseFactory;
-
-    const TURING_EXPIRE = 1800;
-
     public function injectResponseFactory(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
+        return $this;
+    }
+
+    /**
+     * @var IdGeneratorInterface
+     */
+    protected $idGenerator;
+
+    public function injectIdGenerator(IdGeneratorInterface $idGenerator)
+    {
+        $this->idGenerator = $idGenerator;
         return $this;
     }
 
@@ -101,6 +113,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         }
 
         $this->remainKarma = $result;
+        $this->karmaCost += $karma;
         return $result;
     }
 
@@ -120,8 +133,15 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
 
     public function activeTuringSession()
     {
-        $this->session->getSession()->set(SessionMiddleware::SESSION_TURING, time() + self::TURING_EXPIRE);
         $this->type = self::KARMA_TYPE_TURING_SESSION;
+        do {
+            $this->turingKey = $this->idGenerator->generate();
+        } while ($this->redisClient->exists($this->makeKarmaKey()));
+
+        $this->session->getSession()->set(
+            SessionMiddleware::SESSION_TURING,
+            implode(',', [$this->turingKey, time() + self::TURING_EXPIRE])
+        );
         $this->remainKarma = null;
     }
 
@@ -139,8 +159,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         $this->ipAddress = IpAddress::fromRequest($this->request);
         $this->session = SessionMiddleware::fromRequest($this->request);
         if ($this->session->getSid()) {
-            $storage = $this->session->getSession();
-            if ($storage->exists(SessionMiddleware::SESSION_TURING) && $storage->get(SessionMiddleware::SESSION_TURING) > time()) {
+            if ($this->turingKey = $this->fetchValidTuringKey()) {
                 $this->type = self::KARMA_TYPE_TURING_SESSION;
             } elseif ($this->session->getCurrentUser()) {
                 $this->type = self::KARMA_TYPE_USER_SESSION;
@@ -151,6 +170,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
             $response = $this->delegate();
             return $response
                 ->withHeader('X-Karma', sprintf('%d/%d', $this->getRemainKarma(), self::KARMA_CAPABILITY[$this->type]))
+                ->withHeader('X-Karma-Cost', $this->karmaCost)
                 ->withHeader('X-Karma-Ttl', $this->getTtl());
         } catch (KarmaException $e) {
             $forbidden = $this->responseFactory->createResponse(403);
@@ -179,7 +199,7 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
                 $key = 'u:' . $this->session->getCurrentUser()->id;
                 break;
             case self::KARMA_TYPE_TURING_SESSION:
-                $key = 's:' . $this->session->getSid();
+                $key = 't:' . $this->turingKey;
                 break;
             default:
                 $key = 'unknown';
@@ -187,5 +207,18 @@ class KarmaMiddleware extends AbstractMiddleware implements KarmaPolicy
         }
 
         return self::KARMA_PREFIX . $key;
+    }
+
+    protected function fetchValidTuringKey(): ?string
+    {
+        $storage = $this->session->getSession();
+        if (!$storage->exists(SessionMiddleware::SESSION_TURING)) {
+            return null;
+        }
+        $arr = explode(',', $storage->get(SessionMiddleware::SESSION_TURING));
+        assert(count($arr) == 2);
+        [$sid, $expire] = $arr;
+
+        return $expire > time() ? $sid : null;
     }
 }

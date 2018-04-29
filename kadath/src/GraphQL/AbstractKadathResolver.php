@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Kadath\GraphQL;
 
-use GraphQL\Type\Definition\ResolveInfo;
 use Kadath\Middlewares\KarmaMiddleware;
 use Lit\Griffin\AbstractResolver;
-use Lit\Griffin\Context;
 
 /**
  * Class AbstractKadathResolver
@@ -19,15 +17,19 @@ abstract class AbstractKadathResolver extends AbstractResolver
 {
     const KARMA_COST = KarmaMiddleware::KARMA_COST_GENERAL_REQUEST;
 
-    public function __construct($source, array $args, Context $context, ResolveInfo $resolveInfo)
+    public function resolve()
     {
-        parent::__construct($source, $args, $context, $resolveInfo);
         $this->beforeResolve();
+        return $this->doResolve();
     }
+
+    abstract public function doResolve();
 
     protected function beforeResolve()
     {
-        $this->context->karma()->commit(static::KARMA_COST);
+        if (static::KARMA_COST > 0) {
+            $this->context->karma()->commit(static::KARMA_COST);
+        }
     }
 
     /**

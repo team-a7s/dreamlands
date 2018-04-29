@@ -52,6 +52,7 @@ export default {
       postTitle: '',
       postContent: '',
       loading: false,
+      sessionQuery: null,
     };
   },
   props: [

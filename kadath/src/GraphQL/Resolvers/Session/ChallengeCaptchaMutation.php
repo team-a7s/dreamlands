@@ -28,7 +28,7 @@ class ChallengeCaptchaMutation extends AbstractKadathResolver
         return $this;
     }
 
-    public function resolve()
+    public function doResolve()
     {
         $uri = $_ENV[Kadath::ENV_RECAPTCHA_URL];
         $response = $this->httpClient->post($uri, [

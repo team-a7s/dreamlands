@@ -33,7 +33,7 @@ class CreateAuthUrlMutaion extends AbstractKadathResolver
     }
 
 
-    public function resolve()
+    public function doResolve()
     {
         $url = $this->githubProvider->getAuthorizationUrl();
         $this->context->sessionStorage()->set(

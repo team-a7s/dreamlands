@@ -164,7 +164,7 @@ export default {
       }).then(o => o.data.login);
     }, // requestLogin
     doLogout() {
-      localStorage.token = null;
+      delete localStorage.token;
 
       this.$apollo.provider.defaultClient.writeQuery({
         query: sessionQuery,

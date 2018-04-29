@@ -32,6 +32,17 @@ router.afterEach(() => {
 plugins.forEach(p => Vue.use(p));
 Object.assign(Vue.options.components, components);
 Object.assign(Vue.options.filters, filters);
+Vue.mixin({
+  data() {
+    const data = {};
+    if (this.$options.apollo) {
+      for (const k of Object.getOwnPropertyNames(this.$options.apollo)) {
+        data[k] = null;
+      }
+    }
+    return data;
+  },
+});
 
 fontawesome.library.add(brands, solid);
 window.v = new Vue(Object.assign({

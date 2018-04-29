@@ -24,11 +24,6 @@ export default {
     }
   }`,
   },
-  data() {
-    return {
-      boards: null,
-    };
-  },
   mounted() {
     this.$store.commit('setTitle', 'Home');
   },

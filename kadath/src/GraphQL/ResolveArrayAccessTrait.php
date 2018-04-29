@@ -26,5 +26,4 @@ trait ResolveArrayAccessTrait
     {
         throw new \BadMethodCallException();
     }
-
 }
