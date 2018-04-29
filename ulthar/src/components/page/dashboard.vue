@@ -1,8 +1,12 @@
 <template>
   <section class="dashboard">
-    <h1>Hello Dash</h1>
-    <hr>
-    ASDF
+    <md-empty-state
+      md-icon="call_missed"
+      md-label="从左上角开始"
+      md-description="">
+      <small class="md-caption">Alpha测试期间数据<strong>不定期清理</strong></small>
+    </md-empty-state>
+
   </section>
 </template>
 

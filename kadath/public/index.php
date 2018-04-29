@@ -6,5 +6,8 @@ use Monolog\Handler\ChromePHPHandler;
 
 require(__DIR__ . '/../vendor/autoload.php');
 
-KLogger::instance()->pushHandler(new ChromePHPHandler());
+if ($_ENV['ENV'] ?? 'development' === 'development') {
+    KLogger::instance()->pushHandler(new ChromePHPHandler());
+}
+
 Kadath::run();

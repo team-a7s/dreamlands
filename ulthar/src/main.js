@@ -36,9 +36,9 @@ Vue.mixin({
   data() {
     const data = {};
     if (this.$options.apollo) {
-      for (const k of Object.getOwnPropertyNames(this.$options.apollo)) {
+      Object.getOwnPropertyNames(this.$options.apollo).forEach((k) => {
         data[k] = null;
-      }
+      });
     }
     return data;
   },

@@ -58,9 +58,9 @@ export default {
     sessionQuery: {
       query: sessionQuery,
       loadingKey: 'loading',
-      watchLoading(a, b) {
-        console.log(a, b, this.loading);
-      },
+      // watchLoading(a, b) {
+      //   console.log(a, b, this.loading);
+      // },
     },
   },
   data() {

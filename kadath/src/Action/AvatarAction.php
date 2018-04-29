@@ -13,11 +13,11 @@ use Kadath\Exceptions\HttpException;
 use Kadath\Exceptions\KadathException;
 use Kadath\GraphQL\KadathContext;
 use Kadath\GraphQL\NodeIdentify;
-use Kadath\Middlewares\KarmaMiddleware;
 use Lit\Air\Injection\SetterInjector;
 use Lit\Nimo\MiddlewarePipe;
 use Middlewares\Expires;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class AvatarAction extends KadataAction
 {
@@ -36,20 +36,26 @@ class AvatarAction extends KadataAction
     /**
      * @var KadathContext
      */
-    protected $kadathContext;
+    protected $context;
 
-    public function injectKadathContext(KadathContext $kadathContext)
+    public function injectContext(KadathContext $kadathContext)
     {
-        $this->kadathContext = $kadathContext;
+        $this->context = $kadathContext;
         return $this;
     }
 
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->context->request = $request;
+        return parent::handle($request);
+    }
+
+
     protected function main(): ResponseInterface
     {
-        $this->kadathContext->karma()->commit(KarmaMiddleware::KARMA_COST_GENERAL_REQUEST);
         $nodeId = $this->request->getAttribute('nodeId');
         try {
-            [$type, $id] = $this->kadathContext->nodeIdentify->decodeId($nodeId);
+            [$type, $id] = $this->context->nodeIdentify->decodeId($nodeId);
         } catch (KadathException $e) {
             throw HttpException::notFound();
         }
@@ -59,7 +65,7 @@ class AvatarAction extends KadataAction
         /**
          * @var UserRecord $user
          */
-        $user = $this->kadathContext->fetchNode($type, $id);
+        $user = $this->context->fetchNode($type, $id);
         if (!$user) {
             throw HttpException::notFound();
         }
