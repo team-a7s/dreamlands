@@ -79,7 +79,7 @@ export default {
         this.$emit('posted', { response });
         this.loading = false;
       }).catch((err) => {
-        this.$store.commit('error', err);
+        this.$apolloProvider.errorHandler.call(this, err);
         this.loading = false;
       });
     },

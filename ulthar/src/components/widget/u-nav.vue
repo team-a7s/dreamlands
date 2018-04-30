@@ -2,7 +2,7 @@
   <section class="nav">
     <md-list v-if="boards" class="md-double-line md-dense">
       <md-list-item v-for="board in boards.nodes" :key="board.id"
-                    :to="'/board/' + board.id" class="board-link md-list-item-text"
+                    :to="'/board/' + board.id" class="board-link"
       >
         <!--<md-icon>move_to_inbox</md-icon>-->
         <div class="md-list-item-text">

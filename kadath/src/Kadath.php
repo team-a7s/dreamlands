@@ -64,6 +64,10 @@ class Kadath
         ]);
     }
 
+    public static function isDebug()
+    {
+        return $_ENV['ENV'] ?? 'development' === 'development';
+    }
 
     public static function makeContainer(array $config = []): BoltContainer
     {

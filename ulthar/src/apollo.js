@@ -53,12 +53,18 @@ const apolloProvider = new VueApollo({
       return;
     }
 
+    let msg;
     switch (e.graphQLErrors[0].category) {
       case 'karma':
         this.$store.commit('refreshKarma', e.graphQLErrors[0].category);
         break;
       default:
-        console.error(e.graphQLErrors, this);
+        msg = e.message || e;
+        if (msg.match(/^GraphQL error: /)) {
+          msg = msg.slice(15);
+        }
+
+        this.$store.commit('error', `处理失败，原因：\n${msg}`);
     }
   },
 });

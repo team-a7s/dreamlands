@@ -1,0 +1,4 @@
+integrate/*.env
+postgre-data
+.terraform
+terraform.tfstate*

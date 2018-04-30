@@ -11,6 +11,7 @@ use GraphQL\Type\Schema;
 use GraphQL\Utils\BuildSchema;
 use Lit\Air\Configurator;
 use Lit\Bolt\BoltApp;
+use Lit\Bolt\BoltContainer;
 
 class GraphQLConfiguration
 {
@@ -23,12 +24,22 @@ class GraphQLConfiguration
             StandardServer::class => Configurator::provideParameter([
                 'config' => Configurator::alias(ServerConfig::class),
             ]),
-            ServerConfig::class => function (Schema $schema, GlobalFieldResolver $fieldResolver, Context $context) {
-                return ServerConfig::create()
+            ServerConfig::class => function (
+                Schema $schema,
+                GlobalFieldResolver $fieldResolver,
+                Context $context,
+                BoltContainer $container
+            ) {
+                $config = ServerConfig::create()
                     ->setSchema($schema)
                     ->setFieldResolver($fieldResolver)
-                    ->setContext($context)
-                    ->setDebug(Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE);
+                    ->setContext($context);
+
+                if ($container->has('IS_DEBUG') && $container->get('IS_DEBUG')) {
+                    $config->setDebug(Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE);
+                }
+
+                return $config;
             },
             Schema::class => function (SourceBuilder $sourceBuilder, TypeConfigDecorator $typeConfigDecorator) {
                 return BuildSchema::build($sourceBuilder->build(), $typeConfigDecorator);

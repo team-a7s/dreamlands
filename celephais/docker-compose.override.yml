@@ -1,0 +1,42 @@
+version: '3'
+services:
+  fpm:
+    networks:
+      - nyarl
+    links:
+      - pg:pg.lvh.me
+      - redis:redis.lvh.me
+  nginx:
+    networks:
+      - nyarl
+    ports:
+      - 80
+    links:
+      - fpm:fpm.lvh.me
+  redis:
+    networks:
+      - nyarl
+  pg:
+    image: postgres:10-alpine
+    ports:
+      - 5432
+    volumes:
+      - ./postgre-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: dreamlands
+      POSTGRES_PASSWORD: dreamlands
+    networks:
+      - nyarl
+
+  postgrest:
+    depends_on:
+      - pg
+    image: postgrest/postgrest
+    environment:
+      PGRST_DB_URI: postgres://dreamlands:dreamlands@pg:5432/dreamlands
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: dreamlands
+    networks:
+      - nyarl
+networks:
+  nyarl:

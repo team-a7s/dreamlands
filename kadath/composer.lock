@@ -2433,16 +2433,16 @@
         },
         {
             "name": "webonyx/graphql-php",
-            "version": "v0.11.5",
+            "version": "v0.11.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webonyx/graphql-php.git",
-                "reference": "b97cad0f4a50131c85d9224e8e36ebbcf1c6b425"
+                "reference": "f438a726cd523bc584e78d866eca270165c42fd5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/webonyx/graphql-php/b97cad0f4a50131c85d9224e8e36ebbcf1c6b425.zip",
-                "reference": "b97cad0f4a50131c85d9224e8e36ebbcf1c6b425",
+                "url": "https://files.phpcomposer.com/files/webonyx/graphql-php/f438a726cd523bc584e78d866eca270165c42fd5.zip",
+                "reference": "f438a726cd523bc584e78d866eca270165c42fd5",
                 "shasum": ""
             },
             "require": {
@@ -2468,7 +2468,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD"
+                "MIT"
             ],
             "description": "A PHP port of GraphQL reference implementation",
             "homepage": "https://github.com/webonyx/graphql-php",
@@ -2476,7 +2476,7 @@
                 "api",
                 "graphql"
             ],
-            "time": "2017-12-12T09:03:21+00:00"
+            "time": "2018-04-17T10:34:43+00:00"
         },
         {
             "name": "yzalis/identicon",

@@ -96,7 +96,7 @@ export default {
         });
 
         this.$store.commit('error', '登录成功');
-      }).catch(this.handleError.bind(this));
+      }).catch(this.$apolloProvider.errorHandler.bind(this));
     }, // doLogin()
     doSpawn() {
       this.$apollo.mutate({
@@ -136,7 +136,7 @@ export default {
           this.spawnedLogin = `${spawnUser.user.displayName}:${spawnUser.hash}`;
           this.showMessage(`请保管好您的登录暗号<br>${this.spawnedLogin}`, '注册成功');
         });
-      }).catch(this.handleError.bind(this));
+      }).catch(this.$apolloProvider.errorHandler.bind(this));
     },
     showMessage(content, title = '提示信息') {
       this.dialogTitle = title;
@@ -173,15 +173,6 @@ export default {
         },
       });
       this.login = '';
-    },
-    handleError(err) {
-      let msg = err.message || err;
-      if (msg.match(/^GraphQL error: /)) {
-        msg = msg.slice(15);
-      }
-
-      this.$store.commit('error', `处理失败，原因：\n${msg}`);
-      console.warn(err);
     },
   },
   computed: {

@@ -1,0 +1,9 @@
+version: '3'
+# use host network to connect with db server
+services:
+  fpm:
+    network_mode: host
+  nginx:
+    network_mode: host
+  redis:
+    network_mode: host

@@ -57,6 +57,7 @@ class KadathContainer extends BoltContainer
     {
         /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
         $defaultConfiguration = [
+                'IS_DEBUG' => Kadath::isDebug(),
                 //Bolt
                 BoltContainer::class => $this,
                 BoltRouterApp::class => C::decorateCallback(
@@ -74,7 +75,7 @@ class KadathContainer extends BoltContainer
                         \FastRoute\Dispatcher\GroupCountBased::class,
                     ]),
                     C::instance(RouterStubResolver::class),
-                    [NotFoundAction::class],
+                    NotFoundAction::class,
                 ]),
 
                 //Kadath
