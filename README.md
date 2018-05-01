@@ -10,15 +10,16 @@ This is the monorepo of Project Dreamlands.
 
 ### Random TODOs
 
-
 #### Features
 
 - Posts
   - [ ] quote
   - [ ] Markdown post
   - [ ] HTML/UBB post (?)
+- User Page
+  - [ ] post list
+  - [ ] comment wall
 - [ ] DM / mention
-- [ ] personal wall
 - Karma
   - [ ] better turing test timing
   - [ ] alternative turing test
