@@ -45,7 +45,8 @@ Vue.mixin({
 });
 
 fontawesome.library.add(brands, solid);
-window.v = new Vue(Object.assign({
+// eslint-disable-next-line
+new Vue(Object.assign({
   el: '#app',
   config,
   router,

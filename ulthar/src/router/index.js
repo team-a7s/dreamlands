@@ -9,7 +9,7 @@ Vue.use(Router);
 const props = true;
 
 export default new Router({
-  mode: 'history',
+  mode: 'hash',
   routes: [
     {
       path: '/',
