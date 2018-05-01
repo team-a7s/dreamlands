@@ -8,7 +8,7 @@
             <label>标题</label>
             <md-input maxlength="30" name="title" placeholder="标题" v-model="postTitle"></md-input>
           </md-field>
-          <md-field class="md-layout-item md-small-size-35 md-medium-size-20 title-label">
+          <md-field class="md-layout-item md-small-size-30 md-medium-size-20 title-label">
             <slot></slot>
           </md-field>
         </div>

@@ -78,7 +78,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new Dotenv()
+    new Dotenv({
+      path: process.env.NODE_ENV==='production'?'../celephais/integrate/ulthar.env':'./.env',
+    })
   ],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
