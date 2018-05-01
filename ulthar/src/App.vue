@@ -38,7 +38,7 @@
       v-if="$store.state.modal"
     >
       <template v-if="$store.state.modal.type==='karma'">
-        <md-dialog-title>Pause!</md-dialog-title>
+        <md-dialog-title>我不是机器人</md-dialog-title>
         <md-dialog-content>
           <vue-recaptcha
             @verify="verifyCaptcha"

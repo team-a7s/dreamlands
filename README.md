@@ -28,6 +28,8 @@ This is the monorepo of Project Dreamlands.
   - [ ] plan
 - Moderation system
   - [ ] plan
+- UI
+  - [ ] unify UI copywriting (i18n??)
 
 #### Dev support
 
